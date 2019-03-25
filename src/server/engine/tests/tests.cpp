@@ -5,11 +5,14 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/test_tools.hpp>
 
-void pick3Fields(Board &x, const std::vector<int> fields)
+using move_pair = std::pair<int, int>;
+
+void pickFields(Board &x, std::initializer_list<move_pair> moves)
 {
-    x.pickField(fields[0],1);
-    x.pickField(fields[1],1);
-    x.pickField(fields[2],1);
+    for(const move_pair &move : moves)
+    {
+        x.pickField(move.first, move.second);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE(BoardTests)
@@ -30,7 +33,7 @@ BOOST_AUTO_TEST_CASE(testCheckFieldLock)
 BOOST_AUTO_TEST_CASE(testHorizontalWin1)
 {
     Board x;
-    pick3Fields(x,{0,1,2});
+    pickFields(x,{{0,1}, {1,1}, {2,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -38,7 +41,7 @@ BOOST_AUTO_TEST_CASE(testHorizontalWin1)
 BOOST_AUTO_TEST_CASE(testHorizontalWin2)
 {
     Board x;
-    pick3Fields(x,{3,4,5});
+    pickFields(x,{{3,1}, {4,1}, {5,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -46,7 +49,7 @@ BOOST_AUTO_TEST_CASE(testHorizontalWin2)
 BOOST_AUTO_TEST_CASE(testHorizontalWin3)
 {
     Board x;
-    pick3Fields(x,{6,7,8});
+    pickFields(x,{{6,1}, {7,1}, {8,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -54,7 +57,7 @@ BOOST_AUTO_TEST_CASE(testHorizontalWin3)
 BOOST_AUTO_TEST_CASE(testVerticalWin1)
 {
     Board x;
-    pick3Fields(x,{0,3,6});
+    pickFields(x,{{0,1}, {3,1}, {6,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -62,7 +65,7 @@ BOOST_AUTO_TEST_CASE(testVerticalWin1)
 BOOST_AUTO_TEST_CASE(testVerticalWin2)
 {
     Board x;
-    pick3Fields(x,{1,4,7});
+    pickFields(x,{{1,1}, {4,1}, {7,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -70,7 +73,7 @@ BOOST_AUTO_TEST_CASE(testVerticalWin2)
 BOOST_AUTO_TEST_CASE(testVerticalWin3)
 {
     Board x;
-    pick3Fields(x,{2,5,8});
+    pickFields(x,{{2,1}, {5,1}, {8,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -78,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testVerticalWin3)
 BOOST_AUTO_TEST_CASE(testDiagonalWin1)
 {
     Board x;
-    pick3Fields(x,{0,4,8});
+    pickFields(x,{{0,1}, {4,1}, {8,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -86,7 +89,7 @@ BOOST_AUTO_TEST_CASE(testDiagonalWin1)
 BOOST_AUTO_TEST_CASE(testDiagonalWin2)
 {
     Board x;
-    pick3Fields(x,{2,4,6});
+    pickFields(x,{{2,1}, {4,1}, {6,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 1);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -94,15 +97,7 @@ BOOST_AUTO_TEST_CASE(testDiagonalWin2)
 BOOST_AUTO_TEST_CASE(testDraw)
 {
     Board x;
-    x.pickField(4,1);
-    x.pickField(2,2);
-    x.pickField(8,1);
-    x.pickField(0,2);
-    x.pickField(1,1);
-    x.pickField(7,2);
-    x.pickField(3,1);
-    x.pickField(5,2);
-    x.pickField(6,1);
+    pickFields(x,{{4,1}, {2,2}, {8,1}, {0,2}, {1,1}, {7,2}, {3,1}, {5,2}, {6,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 0);
     BOOST_CHECK_EQUAL(x.gameEnded(), true);
 }
@@ -110,9 +105,7 @@ BOOST_AUTO_TEST_CASE(testDraw)
 BOOST_AUTO_TEST_CASE(testIngameSituation1)
 {
     Board x;
-    x.pickField(0,1);
-    x.pickField(1,2);
-    x.pickField(2,1);
+    pickFields(x,{{0,1}, {1,2}, {2,1}});
     BOOST_CHECK_EQUAL(x.getWinner(), 0);
     BOOST_CHECK_EQUAL(x.gameEnded(), false);
 }
