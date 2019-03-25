@@ -15,6 +15,15 @@ void pickFields(Board &x, std::initializer_list<move_pair> moves)
     }
 }
 
+void makeMoves(GameState &x, std::initializer_list<move_pair> moves)
+{
+    for(const move_pair &move : moves)
+    {
+        x.makeMove(move.first, move.second);
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE(BoardTests)
 
 BOOST_AUTO_TEST_CASE(testPickEmptyField)
@@ -135,28 +144,22 @@ BOOST_AUTO_TEST_CASE(testCheckLocalAndGlobalWin)
 {
     GameState x;
     x.makeMove(0,1);
+    
     BOOST_CHECK_EQUAL(x.checkLocalWin(), 0);
-    x.makeMove(1,0);
-    x.makeMove(0,2);
-    x.makeMove(2,0);
-    x.makeMove(0,0);
+
+    makeMoves(x,{{1,0}, {0,2}, {2,0}, {0,0}});
+
     BOOST_CHECK_EQUAL(x.checkLocalWin(), 1);
     BOOST_CHECK_EQUAL(x.checkGlobalWin(), 0);
     BOOST_CHECK_EQUAL(x.makeMove(0,5), false);          //sprawdzenie czy można ruszyć się na planszy, na której wygrał jeden z graczy
-    x.makeMove(5,3);
-    x.makeMove(3,6);
-    x.makeMove(6,3);
-    x.makeMove(3,0);
-    x.makeMove(7,3);
-    x.makeMove(3,3);
+    
+    makeMoves(x,{{5,3}, {3,6}, {6,3}, {3,0}, {7,3}, {3,3}});
+
     BOOST_CHECK_EQUAL(x.checkLocalWin(), 1);
     BOOST_CHECK_EQUAL(x.checkGlobalWin(), 0);
-    x.makeMove(8,6);
-    x.makeMove(6,7);
-    x.makeMove(7,6);
-    x.makeMove(6,8);
-    x.makeMove(8,3);
-    x.makeMove(6,6);
+
+    makeMoves(x,{{8,6}, {6,7}, {7,6}, {6,8}, {8,3}, {6,6}});
+
     BOOST_CHECK_EQUAL(x.checkLocalWin(), 1);
     BOOST_CHECK_EQUAL(x.checkGlobalWin(), 1);
 }
