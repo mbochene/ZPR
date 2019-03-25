@@ -8,15 +8,15 @@ GameState::GameState()
     lastChosenBoard=0;
 }
 
-GameState::~GameState(){};
+GameState::~GameState(){}
 
 ////////////// czy zakładać błędy api ??? ///////////
 
-bool GameState::makeMove(const int &board, const int &field, const int &player)
+bool GameState::makeMove(const int &board, const int &field)
 {
     bool isBoardIncorrect = (nextBoard!=9 && board!=nextBoard) || !globalBoard.isPickPossible(board) || localBoards[board].gameEnded();  // plansza jest niepoprawnie wybrana, gdy gracz spróbuje wybrać inną planszę niż wynika to z poprzedniego ruchu lub (w przypadku gdy może grać na każdej) planszę, na której gra się skończyła
 
-    if(isBoardIncorrect || !localBoards[board].pickField(field, player))
+    if(isBoardIncorrect || !localBoards[board].pickField(field, whoseTurn))
         return false;
     
     whoseTurn=whoseTurn%2+1;
@@ -47,4 +47,7 @@ int GameState::checkGlobalWin()
     return globalBoard.getWinner();
 }
 
-// cos do ustawiania next board
+int GameState::getWhoseTurn()
+{
+    return whoseTurn;
+}

@@ -10,7 +10,7 @@ Board::Board()
     winner=0;
 }
 
-Board::~Board(){};
+Board::~Board(){}
 
 ////////////// czy zakładać błędy api ??? ///////////
 

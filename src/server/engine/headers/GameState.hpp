@@ -15,9 +15,10 @@ class GameState
     GameState();
     ~GameState();
 
-    bool makeMove(const int &board, const int &field, const int &player); // metoda pozwalająca na "postawienie" kółka lub krzyżyka na danej planszy; zwraca true i zmienia wartości zmiennych lokalnych, jeśli operacja się powiedzie
+    bool makeMove(const int &board, const int &field); // metoda pozwalająca na "postawienie" kółka lub krzyżyka na danej planszy; zwraca true i zmienia wartości zmiennych lokalnych, jeśli operacja się powiedzie
     int checkLocalWin();   //metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy lokalnej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
     int checkGlobalWin();  // metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globlanej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
+    int getWhoseTurn();    // metoda zwracająca numer gracza, który ma ruch
 };
 
 #endif

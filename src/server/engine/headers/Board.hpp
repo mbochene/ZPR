@@ -3,7 +3,7 @@
 
 class Board
 {
-    int fields[9];      // plansza ma 9 pól; 0-nic; 1-krzyżyk; 2-kółko
+    int fields[9];      // plansza ma 9 pól; index=0 -> lewe górne pole; index=8 -> prawe dolne pole; 0-nic; 1-krzyżyk; 2-kółko
     int emptyFields;    // liczba wolnych pól
     bool end;           // fałsz, dopóki żaden z graczy nie wygrał i może wykonać ruchy
     int winner;         // numer gracza, który wygrał (początkowo 0)
