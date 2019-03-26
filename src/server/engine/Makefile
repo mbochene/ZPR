@@ -16,8 +16,11 @@ GameState.o: GameState.cpp headers/GameState.hpp
 Board.o: Board.cpp headers/Board.hpp
 	$(CC) $(OPTS) -c -fPIC Board.cpp -o Board.o
 
-engine.so: GameState.o Board.o
-	$(CC) $(LIB) -shared -o ../engine.so GameState.o Board.o $(CPPFLAGS)
+module.o:
+	$(CC) $(OPTS) -c -fPIC module.cpp -o module.o
+
+engine.so: GameState.o Board.o module.o
+	$(CC) -shared -Wl,-soname,../engine.so -o ../engine.so GameState.o Board.o module.o $(LIB) $(CPPFLAGS)
 
 clean:
 	rm -rf ../engine.so *.o test
