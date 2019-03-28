@@ -64,7 +64,7 @@ def handleClickedField(data):
             data['localGameEnded'] = True
             data['localBoardWinner'] = inHtml
         print(toLighten)
-        emit('respondToClickedField', data, broadcast=True)
+        emit('actualizeView', data, broadcast=True)
 
 def handleReceivedMessage(msg):
     print(msg)
