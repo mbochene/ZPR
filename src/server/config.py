@@ -1,9 +1,9 @@
-#!C:\Users\sergi\AppData\Local\Programs\Python\Python37-32\python.exe
+#!/usr/bin/env python
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 import eventlet
 import os
-
+import event_handlers
 appDir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app')
 templateDir = os.path.join(appDir, 'templates')
 staticDir = os.path.join(appDir, 'static')
@@ -20,34 +20,13 @@ def sessions():
     return render_template('index.html', async_mode=socketio.async_mode)
 
 
-@socketio.on('test', namespace='/test')
-def handleTest():
-    print('tested')
-
 
 @socketio.on('clickedField', namespace='/test')
-def handleClickedField(data):
-    global whoNow
-    global playNowHere
-    id = int(data['id'])
-    if(id // 10 == playNowHere):
-        inHtml = data['inHtml']
-        if(inHtml == ''):
-            data['previouslyPlayed'] = playNowHere
-            inHtml = whoNow
-            if(whoNow == 'X'):
-                whoNow = 'O'
-            else:
-                whoNow = 'X'
-            playNowHere = id % 10
-        data['inHtml'] = inHtml
-        data['playNowHere'] = playNowHere
-    emit('respondToClickedField', data, broadcast=True)
-
+def handleClick(data):
+	event_handlers.handleClickedField(data)
+ 
 
 @socketio.on('msgSent', namespace='/test')
-def handleReceivedMessage(msg):
-    print(msg)
-    emit('respondToReceivedMessage', msg, broadcast=True)
-
+def handleMessage(msg):
+	 event_handlers.handleReceivedMessage(msg)
 

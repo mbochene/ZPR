@@ -1,5 +1,4 @@
-#!C:\Users\sergi\AppData\Local\Programs\Python\Python37-32\python.exe
-
+#!/usr/bin/env python
 from config import socketio, app
 
 if __name__ == '__main__':
