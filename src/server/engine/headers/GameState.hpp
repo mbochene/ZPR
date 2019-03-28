@@ -19,6 +19,8 @@ class GameState
     int checkLocalWin();   //metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy lokalnej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
     int checkGlobalWin();  // metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globlanej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
     int getWhoseTurn();    // metoda zwracająca numer gracza, który ma ruch
+    bool isBoardNotPlayable(const int &board); // metoda zwracająca informację czy na danej planszy można wykonać ruch
+    int getNextBoard();    // zwraca wartość zmiennej nextBoard
 };
 
 #endif

@@ -10,5 +10,7 @@ BOOST_PYTHON_MODULE(engine)
         .def("checkLocalWin", &GameState::checkLocalWin)
         .def("checkGlobalWin", &GameState::checkGlobalWin)
         .def("getWhoseTurn", &GameState::getWhoseTurn)
+        .def("isBoardNotPlayable", &GameState::isBoardNotPlayable)
+        .def("getNextBoard", &GameState::getNextBoard)
     ;
 }

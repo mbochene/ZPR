@@ -51,3 +51,13 @@ int GameState::getWhoseTurn()
 {
     return whoseTurn;
 }
+
+bool GameState::isBoardNotPlayable(const int &board)
+{
+    return localBoards[board].gameEnded();
+}
+
+int GameState::getNextBoard()
+{
+    return nextBoard;
+}
