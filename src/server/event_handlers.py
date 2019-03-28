@@ -32,8 +32,19 @@ class Game:
 
     def getNextBoard(self):
         return self.gameState.getNextBoard()
-
+class Session:
+    def __init__(self):
+        self.numberOfConnectedClients = 0
+        self.clients = []
+    def connectClient(self):
+        self.numberOfConnectedClients += 1
+    def disconnectClient(self):
+        self.numberOfConnectedClients -= 1
+    def getNumberOfConnectedClients(self):
+        return self.numberOfConnectedClients
+    
 game=Game()
+session = Session()
 
 def handleClickedField(data):
     global game
@@ -71,3 +82,13 @@ def handleClickedField(data):
 def handleReceivedMessage(msg):
     print(msg)
     emit('respondToReceivedMessage', msg, broadcast=True)
+
+def handleConnection():
+    session.connectClient()
+    print('connected', session.getNumberOfConnectedClients())
+    if(session.getNumberOfConnectedClients() == 2):
+        emit('startGame', broadcast=True)
+def handleDisconnection():
+    session.disconnectClient()
+    print('disconnected', session.getNumberOfConnectedClients())
+    emit('stopGame', broadcast=True)

@@ -2,7 +2,20 @@ var whoNow = 'X'
 $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    $(".globalBoard").hide();
+    $(".welcomeInfo").show();
 
+    socket.on('startGame', function () {
+        console.log('gamestart');
+        $(".welcomeInfo").hide();
+        $(".globalBoard").show();
+    });
+
+    socket.on('stopGame', function() {
+        console.log('gamestop');
+        $(".globalBoard").hide();
+        $(".welcomeInfo").show();
+    });
     for (let i = 0; i < 9; ++i) {
         var classNameToLighten = '.' + i;
         $(classNameToLighten).addClass('clue');
@@ -26,6 +39,7 @@ $(document).ready(function () {
             $('.' + boardId).hide();
             $('#' + boardId).addClass('finishedLocal');
             document.getElementById(boardId).innerHTML = data.localBoardWinner;
+            console.log(document.getElementById(boardId).innerHTML);
         }
     });
 

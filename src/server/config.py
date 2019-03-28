@@ -29,4 +29,12 @@ def handleClick(data):
 @socketio.on('msgSent', namespace='/test')
 def handleMessage(msg):
 	 event_handlers.handleReceivedMessage(msg)
-
+  
+@socketio.on('connect', namespace='/test')
+def handleConnect():
+	event_handlers.handleConnection()
+	
+@socketio.on('disconnect', namespace='/test')
+def handleDisconnect():
+	event_handlers.handleDisconnection()
+	

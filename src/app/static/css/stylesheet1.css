@@ -16,6 +16,10 @@ table {
     border-collapse: collapse;
     margin: 5px auto;
 }
+.welcomeInfo {
+    font-size: 30px;
+    text-align: center;
+}
 .finishedLocal {
     vertical-align: center;
     text-align: center;
