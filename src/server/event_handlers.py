@@ -56,6 +56,13 @@ def handleClickedField(data):
         
         data['inHtml'] = inHtml
         data['toLighten'] = toLighten
+        try:
+            game.playableFields.index(board)
+            data['localGameEnded'] = False
+            data['localBoardWinner'] = ''
+        except:
+            data['localGameEnded'] = True
+            data['localBoardWinner'] = inHtml
         print(toLighten)
         emit('respondToClickedField', data, broadcast=True)
 
