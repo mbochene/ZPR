@@ -16,17 +16,25 @@ table {
     border-collapse: collapse;
     margin: 5px auto;
 }
-.welcomeInfo {
+#welcomeInfo {
     font-size: 30px;
     text-align: center;
 }
 .finishedLocal {
+    width: 185px;
+    height: 185px;
     vertical-align: center;
     text-align: center;
     font-size: 55px;
     border: 2px solid black;
 }
-.globalBoard {
+.takenByX {
+    color: rgb(241, 237, 28);
+}
+.takenByY {
+    color: rgba(179, 0, 0, 0.692);
+}
+#globalBoard {
     width:600px;
     height: 600px;
 }
@@ -39,12 +47,6 @@ table {
     border-bottom: 2px solid black;
     border-right: 2px solid black;
     border-left: 2px solid black;
-}
-.right {
-    border-right: 4px solid black;
-}
-.bottom {
-    border-bottom: 4px solid black;
 }
 .clue {
     background-color: indianred;
