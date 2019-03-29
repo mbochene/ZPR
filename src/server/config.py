@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
 import eventlet
 import os
@@ -23,7 +23,8 @@ def sessions():
 
 @socketio.on('clickedField', namespace='/test')
 def handleClick(data):
-	event_handlers.handleClickedField(data)
+	socketId = request.sid
+	event_handlers.handleClickedField(data, socketId)
  
 
 @socketio.on('msgSent', namespace='/test')
@@ -32,9 +33,11 @@ def handleMessage(msg):
   
 @socketio.on('connect', namespace='/test')
 def handleConnect():
-	event_handlers.handleConnection()
+	socketId = request.sid
+	event_handlers.handleConnection(socketId)
 	
 @socketio.on('disconnect', namespace='/test')
 def handleDisconnect():
-	event_handlers.handleDisconnection()
+	socketId = request.sid
+	event_handlers.handleDisconnection(socketId)
 	

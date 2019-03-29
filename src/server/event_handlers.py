@@ -32,22 +32,37 @@ class Game:
 
     def getNextBoard(self):
         return self.gameState.getNextBoard()
+
 class Session:
     def __init__(self):
         self.numberOfConnectedClients = 0
         self.clients = []
-    def connectClient(self):
+        self.whoseSocket = {}
+
+    def connectClient(self, socketId):
         self.numberOfConnectedClients += 1
-    def disconnectClient(self):
+        if self.numberOfConnectedClients <= 2:
+            self.whoseSocket[socketId] = self.numberOfConnectedClients
+
+    def disconnectClient(self, socketId):
         self.numberOfConnectedClients -= 1
+        if self.whoseSocket.get(socketId) != None:
+            self.whoseSocket.pop(socketId)
+            for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
+                self.whoseSocket[socket] = 1
+            
     def getNumberOfConnectedClients(self):
         return self.numberOfConnectedClients
     
 game=Game()
 session = Session()
 
-def handleClickedField(data):
+def handleClickedField(data, socketId):
     global game
+    global session
+    print(session.whoseSocket.get(socketId))
+    if session.whoseSocket.get(socketId) != game.getWhoseTurn():
+        return
     toLighten = []
     id = int(data['id'])
     board = id // 10
@@ -83,12 +98,13 @@ def handleReceivedMessage(msg):
     print(msg)
     emit('respondToReceivedMessage', msg, broadcast=True)
 
-def handleConnection():
-    session.connectClient()
+def handleConnection(socketId):
+    session.connectClient(socketId)
     print('connected', session.getNumberOfConnectedClients())
     if(session.getNumberOfConnectedClients() == 2):
         emit('startGame', broadcast=True)
-def handleDisconnection():
-    session.disconnectClient()
+
+def handleDisconnection(socketId):
+    session.disconnectClient(socketId)
     print('disconnected', session.getNumberOfConnectedClients())
     emit('stopGame', broadcast=True)
