@@ -50,6 +50,7 @@ class Session:
             self.whoseSocket.pop(socketId)
             for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
                 self.whoseSocket[socket] = 1
+            emit('stopGame', broadcast=True)
             
     def getNumberOfConnectedClients(self):
         return self.numberOfConnectedClients
@@ -107,4 +108,3 @@ def handleConnection(socketId):
 def handleDisconnection(socketId):
     session.disconnectClient(socketId)
     print('disconnected', session.getNumberOfConnectedClients())
-    emit('stopGame', broadcast=True)

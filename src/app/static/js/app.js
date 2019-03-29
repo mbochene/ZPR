@@ -1,4 +1,3 @@
-var whoNow = 'X'
 var generateLocalBoard = function (id) {
     if (id % 3 == 0) {
         $('#globalBoard').append('<tr id="row' + parseInt(id / 3) + '"></tr>');
