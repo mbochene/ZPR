@@ -47,8 +47,9 @@ class Session:
 
     def connectClient(self, socketId):
         self.numberOfConnectedClients += 1
-        if self.numberOfConnectedClients <= 2:
-            self.whoseSocket[socketId] = self.numberOfConnectedClients
+        dictLength = len(self.whoseSocket)
+        if dictLength < 2:
+            self.whoseSocket[socketId] = dictLength + 1
 
     def disconnectClient(self, socketId):
         self.numberOfConnectedClients -= 1
@@ -118,7 +119,7 @@ def handleReceivedMessage(msg):
 def handleConnection(socketId):
     session.connectClient(socketId)
     print('connected', session.getNumberOfConnectedClients())
-    if(session.getNumberOfConnectedClients() == 2):
+    if len(session.whoseSocket) == 2:
         emit('startGame', broadcast=True)
 
 def handleDisconnection(socketId):
