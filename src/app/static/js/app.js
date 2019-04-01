@@ -12,6 +12,34 @@ var generateLocalBoard = function (id) {
         }
     }
 }
+
+var recoverInitialBoard = function () {
+    var globalBoard = document.getElementById('globalBoard');
+            while (globalBoard.firstChild) {
+                globalBoard.removeChild(globalBoard.firstChild);
+            }
+            for (let i = 0; i < 9; ++i) {
+                generateLocalBoard(i);
+            }
+}
+
+var addClickHandler = function(socket) {
+    $(".field").click(function () {
+        console.log("addClickHandler");
+        inHtml = $(this).html();
+        id = $(this).attr('id');
+        var data = {
+            id: id,
+            inHtml: inHtml,
+            toLighten: [],
+            localGameEnded: false,
+            localBoardWinner: '',
+            globalGameEnded: false
+        };
+        socket.emit('clickedField', data);
+    });
+}
+
 $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
@@ -32,6 +60,8 @@ $(document).ready(function () {
     socket.on('stopGame', function () {
         console.log('gamestop');
         $("#globalBoard").hide();
+        recoverInitialBoard();
+        addClickHandler(socket);
         $("#welcomeInfo").show();
     });
     for (let i = 0; i < 9; ++i) {
@@ -67,21 +97,15 @@ $(document).ready(function () {
                 $('#' + boardId).addClass('takenByY');
             }
             console.log(document.getElementById(boardId).innerHTML);
+            if(data.globalGameEnded)
+            {
+                recoverInitialBoard();
+                addClickHandler(socket);
+            }
         }
     });
 
-    $(".field").click(function () {
-        inHtml = $(this).html();
-        id = $(this).attr('id');
-        var data = {
-            id: id,
-            inHtml: inHtml,
-            toLighten: [],
-            localGameEnded: false,
-            localBoardWinner: ''
-        };
-        socket.emit('clickedField', data);
-    });
+    addClickHandler(socket);
 
     $("#sender").click(function () {
         console.log($("#textfield").val())

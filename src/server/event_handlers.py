@@ -13,6 +13,11 @@ class Game:
     def prepareNewRound(self):
         self.gameState = GameState()
         self.playableFields = [0,1,2,3,4,5,6,7,8]
+    
+    def prepareNewGame(self):
+        self.prepareNewRound()
+        self.scoreTable['X'] = 0
+        self.scoreTable['O'] = 0
 
     def makeMove(self, board, field):
         self.whoseTurnSymbol = game.playerSymbol[game.getWhoseTurn()]
@@ -38,6 +43,7 @@ class Session:
         self.numberOfConnectedClients = 0
         self.clients = []
         self.whoseSocket = {}
+        self.game = Game()
 
     def connectClient(self, socketId):
         self.numberOfConnectedClients += 1
@@ -47,16 +53,17 @@ class Session:
     def disconnectClient(self, socketId):
         self.numberOfConnectedClients -= 1
         if self.whoseSocket.get(socketId) != None:
+            self.game.prepareNewGame()
             self.whoseSocket.pop(socketId)
             for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
-                self.whoseSocket[socket] = 1
+                self.whoseSocket[socket] = 1            # dodac emita restartujacego gre
             emit('stopGame', broadcast=True)
             
     def getNumberOfConnectedClients(self):
         return self.numberOfConnectedClients
     
-game=Game()
 session = Session()
+game = session.game
 
 def handleClickedField(data, socketId):
     global game
@@ -91,6 +98,15 @@ def handleClickedField(data, socketId):
         else:
             data['localGameEnded'] = True
             data['localBoardWinner'] = game.whoseTurnSymbol
+        
+        globalWinner = game.checkGlobalWin()
+
+        if globalWinner != 0:
+            data['globalGameEnded'] = True
+            game.scoreTable[game.whoseTurnSymbol] += 1
+            game.prepareNewRound()
+        else:
+            data['globalGameEnded'] = False
 
         print(toLighten)
         emit('actualizeView', data, broadcast=True)
