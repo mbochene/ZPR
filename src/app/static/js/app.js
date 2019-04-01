@@ -64,6 +64,12 @@ $(document).ready(function () {
         addClickHandler(socket);
         $("#welcomeInfo").show();
     });
+
+    socket.on('disconnect', function () {
+        console.log('disconnect');
+        socket.disconnect();
+    });
+
     for (let i = 0; i < 9; ++i) {
         $('.' + i).addClass('clue');
     }

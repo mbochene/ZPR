@@ -133,3 +133,4 @@ def handleConnection(socketId):
 def handleDisconnection(socketId):
     session.disconnectClient(socketId)
     print('disconnected', session.getNumberOfConnectedClients())
+    emit('disconnect', room=socketId)
