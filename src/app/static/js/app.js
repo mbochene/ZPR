@@ -13,6 +13,7 @@ var generateLocalBoard = function (id) {
     }
 }
 
+
 var recoverInitialBoard = function () {
     var globalBoard = document.getElementById('globalBoard');
             while (globalBoard.firstChild) {
@@ -44,10 +45,12 @@ $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
 
+    recoverInitialBoard();
+/*
     for (let i = 0; i < 9; ++i) {
         generateLocalBoard(i);
     }
-
+*/
     $("#globalBoard").hide();
     $("#welcomeInfo").show();
 
@@ -67,6 +70,8 @@ $(document).ready(function () {
 
     socket.on('disconnect', function () {
         console.log('disconnect');
+        $("#globalBoard").hide();
+        $("#welcomeInfo").show();
         socket.disconnect();
     });
 
