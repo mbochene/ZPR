@@ -1,74 +1,6 @@
 from flask_socketio import SocketIO, send, emit
-from engine import GameState
+from session import Session
 
-class Game:
-    def __init__(self):
-        self.prepareNewRound()
-        self.playerSymbol = ["none",'X','O']
-        self.scoreTable = {
-            'X' : 0,
-            'O' : 0
-        }
-
-    def prepareNewRound(self):
-        self.gameState = GameState()
-        self.playableFields = [0,1,2,3,4,5,6,7,8]
-    
-    def prepareNewGame(self):
-        self.prepareNewRound()
-        self.scoreTable['X'] = 0
-        self.scoreTable['O'] = 0
-
-    def makeMove(self, board, field):
-        self.whoseTurnSymbol = game.playerSymbol[game.getWhoseTurn()]
-        return self.gameState.makeMove(board,field)
-
-    def checkLocalWin(self):
-        return self.gameState.checkLocalWin()
-
-    def checkGlobalWin(self):
-        return self.gameState.checkGlobalWin()
-
-    def getWhoseTurn(self):
-        return self.gameState.getWhoseTurn()
-
-    def isBoardNotPlayable(self, board):
-        return self.gameState.isBoardNotPlayable(board)
-
-    def getNextBoard(self):
-        return self.gameState.getNextBoard()
-
-class Session:
-    def __init__(self):
-        self.numberOfConnectedClients = 0
-        self.clients = []
-        self.whoseSocket = {}
-        self.game = Game()
-        self.isGameActive = False
-
-    def connectClient(self, socketId):
-        self.numberOfConnectedClients += 1
-        dictLength = len(self.whoseSocket)
-        print "dict length: %d" % (dictLength)
-        if dictLength < 2:
-            self.whoseSocket[socketId] = dictLength + 1
-        for i in self.whoseSocket:
-            print "%s : %d" % (i, self.whoseSocket[i])
-        print "dict length after: %d" % (len(self.whoseSocket))
-
-    def disconnectClient(self, socketId):
-        self.numberOfConnectedClients -= 1
-        if self.whoseSocket.get(socketId) != None:
-            self.isGameActive = False
-            self.game.prepareNewGame()
-            self.whoseSocket.pop(socketId)
-            for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
-                self.whoseSocket[socket] = 1            # dodac emita restartujacego gre
-            emit('stopGame', broadcast=True)
-            
-    def getNumberOfConnectedClients(self):
-        return self.numberOfConnectedClients
-    
 session = Session()
 game = session.game
 
@@ -131,6 +63,7 @@ def handleConnection(socketId):
         session.isGameActive = True
 
 def handleDisconnection(socketId):
-    session.disconnectClient(socketId)
+    if session.disconnectClient(socketId):
+        emit('stopGame', broadcast=True)
     print('disconnected', session.getNumberOfConnectedClients())
     emit('disconnect', room=socketId)
