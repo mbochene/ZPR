@@ -50,9 +50,11 @@ def handleClickedField(data, socketId):
         print(toLighten)
         emit('actualizeView', data, broadcast=True)
 
-def handleReceivedMessage(msg):
-    print(msg)
-    emit('respondToReceivedMessage', msg, broadcast=True)
+def handleReceivedMessage(data, socketId):
+    data['who'] = 'self'
+    emit('respondToReceivedMessage', data, room=socketId)
+    data['who'] = 'friend'
+    emit('respondToReceivedMessage', data, broadcast=True, include_self=False)
 
 def handleConnection(socketId):
     session.connectClient(socketId)

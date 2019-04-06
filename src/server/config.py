@@ -15,29 +15,31 @@ socketio = SocketIO(app)
 whoNow = 'X'
 playNowHere = 1
 
+
 @app.route('/')
 def sessions():
     return render_template('index.html', async_mode=socketio.async_mode)
 
 
-
 @socketio.on('clickedField', namespace='/test')
 def handleClick(data):
-	socketId = request.sid
-	event_handlers.handleClickedField(data, socketId)
- 
+    socketId = request.sid
+    event_handlers.handleClickedField(data, socketId)
+
 
 @socketio.on('msgSent', namespace='/test')
-def handleMessage(msg):
-	 event_handlers.handleReceivedMessage(msg)
-  
+def handleMessage(data):
+    socketId = request.sid
+    event_handlers.handleReceivedMessage(data, socketId)
+
+
 @socketio.on('connect', namespace='/test')
 def handleConnect():
-	socketId = request.sid
-	event_handlers.handleConnection(socketId)
-	
+    socketId = request.sid
+    event_handlers.handleConnection(socketId)
+
+
 @socketio.on('disconnect', namespace='/test')
 def handleDisconnect():
-	socketId = request.sid
-	event_handlers.handleDisconnection(socketId)
-	
+    socketId = request.sid
+    event_handlers.handleDisconnection(socketId)

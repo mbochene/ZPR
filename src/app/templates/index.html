@@ -13,20 +13,44 @@
 </head>
 
 <body>
-    <div id="welcomeInfo">
+    <div id="welcome-info">
         Waiting for players...
     </div>
-    <table id="globalBoard">
-        
-    </table>
+    <div id="game">
+        <div class="chatbox box">
+            <div class="chatlogs">
+            </div>
+            <div class="chat-form">
+                <textarea id="textfield" placeholder="Type in your message"></textarea>
+                <button id="sender">Send</button>
+            </div>
+        </div>
+        <div id="gamebox" class="box gamebox">
+            <table id="globalboard">
 
-    <div style="width:500px; height:500px;">
-        <h1>Chat</h1>
-        <ul id="chat"></ul>
-        <input id="textfield" type="text" placeholder="Type in your message">
-        <button id="sender">Send</button>
+            </table>
+        </div>
+        <div id="scorebox" class="box smallBox">
+            <table>
+                <tr id="xScore">
+                    <td>
+                        X:
+                    </td>
+                    <td>
+                        0
+                    </td>
+                </tr>
+                <tr id="oScore">
+                    <td>
+                        O:
+                    </td>
+                    <td>
+                        0
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
 
 </html>
-

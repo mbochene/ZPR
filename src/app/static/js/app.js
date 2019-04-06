@@ -1,9 +1,9 @@
 var generateLocalBoard = function (id) {
     if (id % 3 == 0) {
-        $('#globalBoard').append('<tr id="row' + parseInt(id / 3) + '"></tr>');
+        $('#globalboard').append('<tr id="row' + parseInt(id / 3) + '"></tr>');
     }
     $('#row' + parseInt(id / 3)).append('<td id="' + id + '"></td>');
-    $('#' + id).append('<table id="table' + id + '" class="localBoard"></table>');
+    $('#' + id).append('<table id="table' + id + '" class="localboard"></table>');
     for (let row = 0; row < 3; ++row) {
         $('#table' + id).append('<tr id="row' + id + row + '"></tr>')
         for (let col = 0; col < 3; ++col) {
@@ -12,19 +12,16 @@ var generateLocalBoard = function (id) {
         }
     }
 }
-
-
 var recoverInitialBoard = function () {
-    var globalBoard = document.getElementById('globalBoard');
-            while (globalBoard.firstChild) {
-                globalBoard.removeChild(globalBoard.firstChild);
-            }
-            for (let i = 0; i < 9; ++i) {
-                generateLocalBoard(i);
-            }
+    var globalBoard = document.getElementById('globalboard');
+    while (globalBoard.firstChild) {
+        globalBoard.removeChild(globalBoard.firstChild);
+    }
+    for (let i = 0; i < 9; ++i) {
+        generateLocalBoard(i);
+    }
 }
-
-var addClickHandler = function(socket) {
+var addClickHandler = function (socket) {
     $(".field").click(function () {
         console.log("addClickHandler");
         inHtml = $(this).html();
@@ -40,29 +37,37 @@ var addClickHandler = function(socket) {
         socket.emit('clickedField', data);
     });
 }
+var appendMessage = function (msg, sender) {
+    var chat = document.getElementsByClassName('chatlogs');
+    var imgPath = '/static/img/user-512.png';
+    if (sender == 'self') {
+        imgPath = '/static/img/galeria-me.png';
+    }
+    $('.chatlogs:first').append('<div class="chat ' + sender + '"></div>');
+    $('.chat:last').append('<div class="user-photo"></div>');
+    $('.user-photo:last').append('<img src="' + imgPath + '">')
+    $('.chat:last').append('<p class="chat-message">' + msg + '</p>');
+    var chatlogs = document.getElementsByClassName('chatlogs')[0];
+    chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
+}
 
 $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
 
     recoverInitialBoard();
-/*
-    for (let i = 0; i < 9; ++i) {
-        generateLocalBoard(i);
-    }
-*/
-    $("#globalBoard").hide();
-    $("#welcomeInfo").show();
+    $("#game").hide();
+    $("#welcome-info").show();
 
     socket.on('startGame', function () {
         console.log('gamestart');
-        $("#welcomeInfo").hide();
-        $("#globalBoard").show();
+        $("#welcome-info").hide();
+        $("#game").show();
     });
 
     socket.on('stopGame', function () {
         console.log('gamestop');
-        $("#globalBoard").hide();
+        $("#game").hide();
         recoverInitialBoard();
         addClickHandler(socket);
         $("#welcomeInfo").show();
@@ -70,7 +75,7 @@ $(document).ready(function () {
 
     socket.on('disconnect', function () {
         console.log('disconnect');
-        $("#globalBoard").hide();
+        $("#game").hide();
         $("#welcomeInfo").show();
         socket.disconnect();
     });
@@ -79,8 +84,8 @@ $(document).ready(function () {
         $('.' + i).addClass('clue');
     }
 
-    socket.on('respondToReceivedMessage', function (msg) {
-        $("#chat").append('<li>' + msg + '</li>')
+    socket.on('respondToReceivedMessage', function (data) {
+        appendMessage(data.msg, data.who);
     });
     socket.on('actualizeView', function (data) {
         boardId = parseInt(data.id / 10);
@@ -108,8 +113,7 @@ $(document).ready(function () {
                 $('#' + boardId).addClass('takenByY');
             }
             console.log(document.getElementById(boardId).innerHTML);
-            if(data.globalGameEnded)
-            {
+            if (data.globalGameEnded) {
                 recoverInitialBoard();
                 addClickHandler(socket);
             }
@@ -119,8 +123,14 @@ $(document).ready(function () {
     addClickHandler(socket);
 
     $("#sender").click(function () {
-        console.log($("#textfield").val())
-        socket.emit('msgSent', $("#textfield").val());
+        if ($('#textfield').val().trim() == "") {
+            return;
+        }
+        var data = {
+            msg: $('#textfield').val(),
+            who: ''
+        }
+        socket.emit('msgSent', data);
         $("#textfield").val('');
     });
 });
