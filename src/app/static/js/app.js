@@ -93,11 +93,10 @@ $(document).ready(function () {
             while (localBoard.firstChild) {
                 localBoard.removeChild(localBoard.firstChild);
             }
-            $('#' + boardId).append('<tr id="won' + boardId + '" class="wonlocal"></tr>');
-            $('#won' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
+            $('#' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
             if (data.globalGameEnded) {
                 var score = parseInt($('.score-' + data.localBoardWinner.toLowerCase() + ':first').html()) + 1;
-                $('.score-' + data.localBoardWinner.toLowerCase() + ':first').html(score);    
+                $('.score-' + data.localBoardWinner.toLowerCase() + ':first').html(score);
                 recoverInitialBoard();
                 addClickHandler(socket);
             }
