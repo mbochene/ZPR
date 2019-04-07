@@ -128,7 +128,7 @@ body {
 }
 
 table {
-    background-color: cadetblue;
+    background-color: hsl(234, 21%, 36%);
     border-collapse: collapse;
     margin: 5px auto;
 }
@@ -161,6 +161,7 @@ table {
     margin-bottom: auto;
     width: 600px;
     height: 600px;
+    border: 5px black solid;
 }
 
 .field {

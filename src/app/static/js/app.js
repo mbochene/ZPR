@@ -91,9 +91,9 @@ $(document).ready(function () {
         boardId = parseInt(data.id / 10);
         document.getElementById(data.id).innerHTML = data.inHtml;
         if (data.inHtml == 'X') {
-            $('#' + data.id).addClass('takenByX');
+            $('#' + data.id).addClass('takenbyx');
         } else {
-            $('#' + data.id).addClass('takenByY');
+            $('#' + data.id).addClass('takenbyy');
         }
         for (let i = 0; i < 9; ++i) {
             var classNameToRemoveLighten = '.' + i;
@@ -105,12 +105,12 @@ $(document).ready(function () {
         }
         if (data.localGameEnded) {
             $('.' + boardId).hide();
-            $('#' + boardId).addClass('finishedLocal');
+            $('#' + boardId).addClass('finishedlocal');
             document.getElementById(boardId).innerHTML = data.localBoardWinner;
             if (data.localBoardWinner == 'X') {
-                $('#' + boardId).addClass('takenByX');
+                $('#' + boardId).addClass('takenbyx');
             } else {
-                $('#' + boardId).addClass('takenByY');
+                $('#' + boardId).addClass('takenbyy');
             }
             console.log(document.getElementById(boardId).innerHTML);
             if (data.globalGameEnded) {
@@ -121,16 +121,21 @@ $(document).ready(function () {
     });
 
     addClickHandler(socket);
-
-    $("#sender").click(function () {
-        if ($('#textfield').val().trim() == "") {
+    $('#textfield').keyup(function (event) {
+        if (event.which == 13) {
+            $('#sender').click();
+        }
+    });
+    $('#sender').click(function () {
+        var message = $('#textfield').val();
+        if (message.trim() == "") {
             return;
         }
+        $("#textfield").val('');
         var data = {
-            msg: $('#textfield').val(),
+            msg: message,
             who: ''
         }
         socket.emit('msgSent', data);
-        $("#textfield").val('');
     });
 });
