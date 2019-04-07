@@ -1,0 +1,15 @@
+.scorer-img img {
+    width: 50px;
+    height: auto;
+}
+.score {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    border-radius: 50%;
+    font-size: 50px;
+}
+.score.score {
+    line-height: 50px;
+}

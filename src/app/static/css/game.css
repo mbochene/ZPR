@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: rgba(214, 202, 130, 0.514);
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+#game {
+    width: inherit;
+    height: inherit;
+}
+
+.chatbox {
+    width: 25%;
+    background-color: rgb(196, 142, 142);
+}
+
+.smallbox {
+    width: 20%;
+}
+
+.gamebox {
+    align-items: center;
+    width: 55%;
+}
+
+#welcome-info {
+    font-size: 30px;
+    text-align: center;
+}
+
+.box {
+    float: left;
+    height: 800px;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+#globalboard {
+    margin: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 600px;
+    height: 600px;
+    border: 5px black solid;
+}
+
+.field {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 25px;
+    box-shadow: 1px 1px 1px 1px black;
+    border-radius: 20%;
+}
+
+.field:hover {
+    background-color: yellowgreen;
+}
+
+.field img {
+    width: 50px;
+    height: auto;
+}
+
+.finishedlocal {
+    width: 185px;
+    height: 185px;
+    vertical-align: center;
+}
+
+.wonlocal img {
+    width: 185px;
+    height: auto;
+}
+
+.localboard {
+    width: 200px;
+    height: 200px;
+    box-shadow: 2px 2px 2px 2px black;
+    border-radius: 10%;
+}
+
+.clue {
+    box-shadow: 1px 1px 1px 1px indianred;
+}

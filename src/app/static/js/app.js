@@ -8,7 +8,7 @@ var generateLocalBoard = function (id) {
         $('#table' + id).append('<tr id="row' + id + row + '"></tr>')
         for (let col = 0; col < 3; ++col) {
             var localId = row * 3 + col;
-            $('#row' + id + row).append('<td id="' + id + localId + '" class="clue field bordered ' + id + '"></td>')
+            $('#row' + id + row).append('<td id="' + id + localId + '" class="clue field ' + id + '"></td>')
         }
     }
 }
@@ -23,7 +23,6 @@ var recoverInitialBoard = function () {
 }
 var addClickHandler = function (socket) {
     $(".field").click(function () {
-        console.log("addClickHandler");
         inHtml = $(this).html();
         id = $(this).attr('id');
         var data = {
@@ -38,94 +37,79 @@ var addClickHandler = function (socket) {
     });
 }
 var appendMessage = function (msg, sender) {
-    var chat = document.getElementsByClassName('chatlogs');
     var imgPath = '/static/img/user-512.png';
     if (sender == 'self') {
         imgPath = '/static/img/galeria-me.png';
     }
     $('.chatlogs:first').append('<div class="chat ' + sender + '"></div>');
     $('.chat:last').append('<div class="user-photo"></div>');
-    $('.user-photo:last').append('<img src="' + imgPath + '">')
+    $('.user-photo:last').append('<img src="' + imgPath + '">');
     $('.chat:last').append('<p class="chat-message">' + msg + '</p>');
     var chatlogs = document.getElementsByClassName('chatlogs')[0];
     chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
 }
-
+var showWelcomeInfo = function () {
+    $("#game").hide();
+    $("#welcome-info").show();
+}
+var showGame = function () {
+    $("#welcome-info").hide();
+    $("#game").show();
+}
 $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-
     recoverInitialBoard();
-    $("#game").hide();
-    $("#welcome-info").show();
-
+    addClickHandler(socket);
+    showWelcomeInfo();
     socket.on('startGame', function () {
-        console.log('gamestart');
-        $("#welcome-info").hide();
-        $("#game").show();
+        showGame();
     });
-
     socket.on('stopGame', function () {
-        console.log('gamestop');
-        $("#game").hide();
+        showWelcomeInfo();
         recoverInitialBoard();
         addClickHandler(socket);
-        $("#welcomeInfo").show();
     });
-
     socket.on('disconnect', function () {
-        console.log('disconnect');
-        $("#game").hide();
-        $("#welcomeInfo").show();
+        showWelcomeInfo();
         socket.disconnect();
     });
-
-    for (let i = 0; i < 9; ++i) {
-        $('.' + i).addClass('clue');
-    }
-
     socket.on('respondToReceivedMessage', function (data) {
         appendMessage(data.msg, data.who);
     });
     socket.on('actualizeView', function (data) {
         boardId = parseInt(data.id / 10);
-        document.getElementById(data.id).innerHTML = data.inHtml;
-        if (data.inHtml == 'X') {
-            $('#' + data.id).addClass('takenbyx');
-        } else {
-            $('#' + data.id).addClass('takenbyy');
-        }
+        $('#' + data.id).append('<img src="/static/img/' + data.inHtml + '.png">');
         for (let i = 0; i < 9; ++i) {
-            var classNameToRemoveLighten = '.' + i;
-            $(classNameToRemoveLighten).removeClass('clue');
+            $('.' + i).removeClass('clue');
         }
         for (let i = 0; i < data.toLighten.length; ++i) {
-            var classNameToLighten = '.' + data.toLighten[i];
-            $(classNameToLighten).addClass('clue');
+            $('.' + data.toLighten[i]).addClass('clue');
         }
         if (data.localGameEnded) {
             $('.' + boardId).hide();
             $('#' + boardId).addClass('finishedlocal');
-            document.getElementById(boardId).innerHTML = data.localBoardWinner;
-            if (data.localBoardWinner == 'X') {
-                $('#' + boardId).addClass('takenbyx');
-            } else {
-                $('#' + boardId).addClass('takenbyy');
+            var localBoard = document.getElementById(boardId);
+            while (localBoard.firstChild) {
+                localBoard.removeChild(localBoard.firstChild);
             }
-            console.log(document.getElementById(boardId).innerHTML);
+            $('#' + boardId).append('<tr id="won' + boardId + '" class="wonlocal"></tr>');
+            $('#won' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
             if (data.globalGameEnded) {
+                var score = parseInt($('.score-' + data.localBoardWinner.toLowerCase() + ':first').html()) + 1;
+                $('.score-' + data.localBoardWinner.toLowerCase() + ':first').html(score);    
                 recoverInitialBoard();
                 addClickHandler(socket);
             }
         }
     });
 
-    addClickHandler(socket);
-    $('#textfield').keyup(function (event) {
+    $('#textfield').keypress(function (event) {
         if (event.which == 13) {
+            event.preventDefault();
             $('#sender').click();
         }
-    });
+    })
     $('#sender').click(function () {
         var message = $('#textfield').val();
         if (message.trim() == "") {
