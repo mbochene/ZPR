@@ -3,7 +3,7 @@
 #include <iostream>
 GameState::GameState()
 {
-    whoseTurn=1;
+    whoseTurn=Board::PlayerSymbol::X;
     nextBoard=9;
     lastChosenBoard=0;
 }
@@ -19,7 +19,7 @@ bool GameState::makeMove(const int &board, const int &field)
     if(isBoardIncorrect || !localBoards[board].pickField(field, whoseTurn))
         return false;
     
-    whoseTurn=whoseTurn%2+1;
+    whoseTurn=static_cast<Board::PlayerSymbol>(static_cast<int>(whoseTurn)%2+1);
     lastChosenBoard=board;
     lastChosenField=field;
 
@@ -31,23 +31,23 @@ bool GameState::makeMove(const int &board, const int &field)
     return true;
 }
 
-int GameState::checkLocalWin()
+Board::PlayerSymbol GameState::checkLocalWin()
 {
-    int i=localBoards[lastChosenBoard].getWinner();
-    if(i!=0)
+    Board::PlayerSymbol i=localBoards[lastChosenBoard].getWinner();
+    if(i!=Board::PlayerSymbol::NONE)
     {
-        globalBoard.pickField(lastChosenBoard,whoseTurn%2+1);
+        globalBoard.pickField(lastChosenBoard,static_cast<Board::PlayerSymbol>(static_cast<int>(whoseTurn)%2+1));
         return i;
     }
-    return 0;
+    return Board::PlayerSymbol::NONE;
 }
 
-int GameState::checkGlobalWin()
+Board::PlayerSymbol GameState::checkGlobalWin()
 {
     return globalBoard.getWinner();
 }
 
-int GameState::getWhoseTurn()
+Board::PlayerSymbol GameState::getWhoseTurn()
 {
     return whoseTurn;
 }
