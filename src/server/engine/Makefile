@@ -11,13 +11,13 @@ test:
 	$(CC) -o test headers/GameState.hpp headers/Board.hpp Board.cpp GameState.cpp tests/tests.cpp $(CPPFLAGS)
 
 GameState.o: GameState.cpp headers/GameState.hpp
-	$(CC) $(OPTS) -c -fPIC GameState.cpp -o GameState.o
+	$(CC) $(OPTS) -c -fPIC GameState.cpp -o GameState.o $(CPPFLAGS)
 
 Board.o: Board.cpp headers/Board.hpp
-	$(CC) $(OPTS) -c -fPIC Board.cpp -o Board.o
+	$(CC) $(OPTS) -c -fPIC Board.cpp -o Board.o $(CPPFLAGS)
 
 module.o:
-	$(CC) $(OPTS) -c -fPIC module.cpp -o module.o
+	$(CC) $(OPTS) -c -fPIC module.cpp -o module.o $(CPPFLAGS)
 
 engine.so: GameState.o Board.o module.o
 	$(CC) -shared -Wl,-soname,../engine.so -o ../engine.so GameState.o Board.o module.o $(LIB) $(CPPFLAGS)

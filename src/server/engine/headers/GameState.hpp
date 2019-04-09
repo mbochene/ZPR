@@ -1,6 +1,10 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 #include "Board.hpp"
+#include <memory>
+#include <vector>
+
+typedef std::shared_ptr<Board> PBoard;                      // nie unique, bo boost python ma problem
 
 class GameState
 {
@@ -8,8 +12,8 @@ class GameState
     int lastChosenBoard;            // numer planszy, na której odbył się ostatni prawidłowy ruch
     int lastChosenField;            // ostatnie prawidłowo wybrane pole
     int nextBoard;                  // numer planszy, na której ma być wykonany następny ruch; jeśli z przedziału [0;8], to na 1 z 9 plansz; jeśli 9, to na każdej planszy (jeśli nie wygrana/remis)
-    Board localBoards[9];           // wektor 9 lokalnych plansz
-    Board globalBoard;              // globlana plansza
+    std::vector<PBoard> localBoards;              // wektor 9 lokalnych plansz
+    PBoard globalBoard;              // globlana plansza
 
     public:
     GameState();

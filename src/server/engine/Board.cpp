@@ -1,18 +1,12 @@
 #include "headers/Board.hpp"
 #include <iostream>
-Board::Board()
+Board::Board() : emptyFields(9), end(false), winner(PlayerSymbol::NONE)
 {
     for(int i=0;i<9;i++)
         fields[i]=PlayerSymbol::NONE;
-
-    emptyFields=9;
-    end=false;
-    winner=PlayerSymbol::NONE;
 }
 
 Board::~Board(){}
-
-////////////// czy zakładać błędy api ??? ///////////
 
 Board::PlayerSymbol Board::isWin()
 {

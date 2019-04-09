@@ -1,5 +1,6 @@
 from flask_socketio import SocketIO, send, emit
 from session import Session
+from engine import PlayerSymbol
 
 session = Session()
 game = session.game
@@ -31,7 +32,7 @@ def handleClickedField(data, socketId):
         data['inHtml'] = game.whoseTurnSymbol
         data['toLighten'] = toLighten
         
-        if not game.checkLocalWin():
+        if game.checkLocalWin() == PlayerSymbol.none:
             data['localGameEnded'] = False
             data['localBoardWinner'] = ''
         else:
@@ -40,7 +41,7 @@ def handleClickedField(data, socketId):
         
         globalWinner = game.checkGlobalWin()
 
-        if globalWinner != 0:
+        if globalWinner != PlayerSymbol.none:
             data['globalGameEnded'] = True
             game.scoreTable[game.whoseTurnSymbol] += 1
             game.prepareNewRound()
