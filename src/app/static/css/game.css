@@ -6,7 +6,7 @@
 }
 
 body {
-    background: rgba(214, 202, 130, 0.514);
+    background: rgba(214, 202, 130, 0.5);
     color: black;
 }
 
@@ -93,5 +93,6 @@ table {
 }
 
 .clue {
-    box-shadow: 1px 1px 1px 1px indianred;
+    background:rgb(235, 90, 90, 1);
+    box-shadow: 2px 2px 2px 2px black;
 }

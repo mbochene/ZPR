@@ -56,6 +56,10 @@ var showGame = function () {
     $("#welcome-info").hide();
     $("#game").show();
 }
+var resetScore = function () {
+    $('.score-x:first').html(0);
+    $('.score-o:first').html(0);
+}
 $(document).ready(function () {
     namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
@@ -68,6 +72,7 @@ $(document).ready(function () {
     socket.on('stopGame', function () {
         showWelcomeInfo();
         recoverInitialBoard();
+        resetScore();
         addClickHandler(socket);
     });
     socket.on('disconnect', function () {
