@@ -68,5 +68,8 @@ testExec = env.Program( target = 'test', source = ['src/server/engine/Board.cpp'
 
 if(platform.system() == "Linux"):
    target = 'test'
+   env.Command("test --log_level=test_suite >&2", None, "./test --log_level=test_suite >&2")
 elif(platform.system() == "Windows"):
    target = 'test.exe'
+
+AlwaysBuild( testExec )
