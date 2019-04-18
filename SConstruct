@@ -46,16 +46,10 @@ elif(platform.system() == "Windows"):
 
 env.Command( target, cpplib, renameDynamicLib )
 
-
+#replace libs in order to compile and run testExec
 if(platform.system() == "Linux"):
-   
-   env.Append( CPPPATH = ['/usr/include/boost/test'] )
-   env.Append( LIBPATH = ['/usr/lib/x86_64-linux-gnu'] )
-
-   env.Replace( CPPFLAGS = '-O2 -Wall -Wextra -pedantic -std=c++11' )
-   env.Replace( LINKFLAGS = '-O2 -Wall -Wextra -pedantic -std=c++11' )
-
-   env.Append( LIBS = [ 'boost_unit_test_framework' ] )
+   env.Replace( LIBPATH = [] )
+   env.Replace( LIBS = [ 'boost_unit_test_framework' ] )
 
 elif(platform.system() == "Windows"):
    env.Append( CPPPATH = [ Dir('C:/Boost/include/boost-1_52'), #tutaj zainstalowane naglowki boost
