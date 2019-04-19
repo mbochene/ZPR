@@ -23,4 +23,4 @@ engine.so: GameState.o Board.o module.o
 	$(CC) -shared -Wl,-soname,../engine.so -o ../engine.so GameState.o Board.o module.o $(LIB) $(CPPFLAGS)
 
 clean:
-	rm -rf *.o tests/*.o *.os test
+	rm -rf *.o tests/*.o *.os *.obj test

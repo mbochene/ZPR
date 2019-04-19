@@ -11,12 +11,12 @@ class Session:
     def connectClient(self, socketId):
         self.numberOfConnectedClients += 1
         dictLength = len(self.whoseSocket)
-        print "dict length: %d" % (dictLength)
+        print ("dict length: %d" % (dictLength))
         if dictLength < 2:
             self.whoseSocket[socketId] = dictLength + 1
         for i in self.whoseSocket:
-            print "%s : %d" % (i, self.whoseSocket[i])
-        print "dict length after: %d" % (len(self.whoseSocket))
+            print ("%s : %d" % (i, self.whoseSocket[i]))
+        print ("dict length after: %d" % (len(self.whoseSocket)))
 
     def disconnectClient(self, socketId):               # zwraca true jesli odlacza sie jeden z grajacych; w.p.p. zwraca false
         self.numberOfConnectedClients -= 1
