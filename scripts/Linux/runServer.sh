@@ -1,1 +1,1 @@
-../../src/server/run.py
+./../../src/server/run.py

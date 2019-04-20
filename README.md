@@ -19,7 +19,7 @@ Technologie wykorzystywane w projekcie:
   > Flask, flask-socketio, eventlet, pyd, pytest (do zainstalowania poprzez skrypt -> **scripts/Windows/prequisities.bat**)
 - **Linux (Ubuntu 16.04 Xenial)**
   > g++
-  > Python 3.5 (najwyższa dostępna wersja dla Ubuntu Xenial)
+  > Python 2.7 
   > libboost-all-dev (boost), scons, python3-pip, Flask, flask-socketio, eventlet, pytest (do zainstalowania poprzez skrypt -> **scripts/Linux/prequisities.sh**)
 
 ### Kompilacja
