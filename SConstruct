@@ -17,8 +17,8 @@ env.Append( BUILDERS = {'BuildMXML': mxmlBuilder} )
 
 if(platform.system() == "Linux"):
    
-   env.Append( CPPPATH = ['/usr/include/python2.7'] )
-   env.Append( LIBPATH = ['/usr/lib/python2.7'] )
+   env.Append( CPPPATH = ['/usr/include/python3.5'] )
+   env.Append( LIBPATH = ['/usr/lib/python3.5'] )
 
    env.Append( CPPFLAGS = '-O2 -Wall -Wextra -pedantic -std=c++11' )
    env.Append( LINKFLAGS = '-O2 -Wall -Wextra -pedantic -std=c++11' )
