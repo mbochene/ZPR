@@ -50,7 +50,7 @@ if(platform.system() == "Linux"):
    target1 = 'src/server/engine.so'
    target2 = 'scripts/Linux/test'
 elif(platform.system() == "Windows"):
-   target = 'src/server/engine.pyd'
+   target1 = 'src/server/engine.pyd'
    target2 = 'scripts/Windows/test.bat'
 
 env.Command( target1, cpplib, renameDynamicLib )
