@@ -47,12 +47,11 @@ else:
 cpplib = env.SharedLibrary( target = 'src/server/engine', source = ['src/server/engine/Board.cpp', 'src/server/engine/GameState.cpp', 'src/server/engine/module.cpp'] )
 
 if(platform.system() == "Linux"):
-   target = 'src/server/engine.so'
-   env.Command( target, cpplib, renameDynamicLib )
-   execution=env.Command("test --log_level=test_suite >&2", None, "./test --log_level=test_suite >&2")
+   target1 = 'src/server/engine.so'
+   target2 = 'scripts/Linux/test'
 elif(platform.system() == "Windows"):
    target = 'src/server/engine.pyd'
-   env.Command( target, cpplib, renameDynamicLib )
-   execution=env.Command("test --log_level=test_suite", None, "test --log_level=test_suite")
+   target2 = 'scripts/Windows/test.bat'
 
-Depends(execution,testExec)
+env.Command( target1, cpplib, renameDynamicLib )
+env.Command( target2, testExec, renameDynamicLib )

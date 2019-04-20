@@ -30,7 +30,7 @@ Należy wywołać z poziomu głównego katalogu projektu:
 Należy wywołać z poziomu głównego katalogu projektu:
 **sconst --clean**
 
-### Uruchamianie serwera
+### Uruchamianie serwera (wraz z automatycznymi testami)
 Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt: 
 **runServer**
 
