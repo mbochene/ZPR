@@ -1,6 +1,4 @@
 from engine import *
-
-
 class Game:
     def __init__(self):
         self.prepareNewRound()

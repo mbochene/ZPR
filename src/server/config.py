@@ -14,32 +14,32 @@ socketio = SocketIO(app)
 
 whoNow = 'X'
 playNowHere = 1
-
+namespace=None
 
 @app.route('/')
 def sessions():
     return render_template('index.html', async_mode=socketio.async_mode)
 
 
-@socketio.on('clickedField', namespace='/test')
+@socketio.on('clickedField', namespace=namespace)
 def handleClick(data):
     socketId = request.sid
     event_handlers.handleClickedField(data, socketId)
 
 
-@socketio.on('msgSent', namespace='/test')
+@socketio.on('msgSent', namespace=namespace)
 def handleMessage(data):
     socketId = request.sid
     event_handlers.handleReceivedMessage(data, socketId)
 
 
-@socketio.on('connect', namespace='/test')
+@socketio.on('connect', namespace=namespace)
 def handleConnect():
     socketId = request.sid
     event_handlers.handleConnection(socketId)
 
 
-@socketio.on('disconnect', namespace='/test')
+@socketio.on('disconnect', namespace=namespace)
 def handleDisconnect():
     socketId = request.sid
     event_handlers.handleDisconnection(socketId)
