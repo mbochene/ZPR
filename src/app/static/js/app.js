@@ -61,7 +61,7 @@ var resetScore = function () {
     $('.score-o:first').html(0);
 }
 $(document).ready(function () {
-    namespace = '/test';
+    namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     recoverInitialBoard();
     addClickHandler(socket);
