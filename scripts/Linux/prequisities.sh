@@ -1,6 +1,7 @@
 #!/bin/bash
 if ! [ -x "$(command -v pyenv)" ]; then
-	echo 'Nie znaleziono polecenia pyenv (Instalacja: ./install_pyenv.sh)'
+	echo 'Nie znaleziono polecenia pyenv'
+	echo 'Aby zainstalowac potrzebne pakiety, najpierw zainstaluj pyenv wykonajac skrypt install_pyenv.sh, a nastepnie ponownie wykonaj skrypt prequisities.sh'
 	exit
 fi
 pyenv install 2.7.16
