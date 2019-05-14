@@ -15,10 +15,16 @@
 </head>
 
 <body>
-    <div id="welcome-info">
-        Waiting for players...
+    <div id="out-of-room">
+        <div id="create-room">
+            <button id="create-room-button">Create room</button>
+        </div>
+        <div id="join-room">
+            <input id="room-id-input" type="text" placeholder="Type in room id">
+            <button id="join-room-button">Join room</button>
+        </div>
     </div>
-    <div id="game">
+    <div id="in-room">
         <div class="chatbox box">
             <div class="chatlogs">
             </div>
@@ -27,26 +33,36 @@
                 <button id="sender">Send</button>
             </div>
         </div>
-        <div class="box gamebox">
-            <table id="globalboard">
-
-            </table>
+        <div id="leave-room">
+            <button id="leave-room-button">
+                Leave room
+            </button>
         </div>
-        <div class="box scorebox">
-            <div class="score">
-                <div class="scorer-img">
-                    <img src="/static/img/X.png">
-                </div>
-                <div class="score-x">
-                    0
-                </div>
+        <div id="welcome-info">
+            Waiting for players...
+        </div>
+        <div id="game">
+            <div class="box gamebox">
+                <table id="globalboard">
+
+                </table>
             </div>
-            <div class="score">
-                <div class="scorer-img">
-                    <img src="/static/img/O.png">
+            <div class="box scorebox">
+                <div class="score">
+                    <div class="scorer-img">
+                        <img src="/static/img/X.png">
+                    </div>
+                    <div class="score-x">
+                        0
+                    </div>
                 </div>
-                <div class="score-o">
-                    0
+                <div class="score">
+                    <div class="scorer-img">
+                        <img src="/static/img/O.png">
+                    </div>
+                    <div class="score-o">
+                        0
+                    </div>
                 </div>
             </div>
         </div>

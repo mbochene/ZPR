@@ -1,11 +1,11 @@
-from engine import *
+import engine as en
 class Game:
     def __init__(self):
         self.prepareNewRound()
         self.playerSymbol = {
-            PlayerSymbol.none: "none",
-            PlayerSymbol.X: 'X',
-            PlayerSymbol.O: 'O'
+            en.PlayerSymbol.none: "none",
+            en.PlayerSymbol.X: 'X',
+            en.PlayerSymbol.O: 'O'
         }
         self.scoreTable = {
             'X': 0,
@@ -13,7 +13,7 @@ class Game:
         }
 
     def prepareNewRound(self):
-        self.gameState = GameState()
+        self.gameState = en.GameState()
         self.playableFields = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     def prepareNewGame(self):
