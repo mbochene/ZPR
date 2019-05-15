@@ -1,14 +1,14 @@
 #!/bin/bash
-if ! [ -x "$(command -v pyenv)" ]; then
-	echo 'Nie znaleziono polecenia pyenv'
-	echo 'Aby zainstalowac potrzebne pakiety, najpierw zainstaluj pyenv wykonajac skrypt install_pyenv.sh, a nastepnie ponownie wykonaj skrypt prequisities.sh'
-	exit
-fi
-pyenv install 2.7.16
-echo "2.7.16" > ~/.pyenv/version
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd $DIR/../..
+sudo apt-get install python3.5
 sudo apt-get install libboost-all-dev
 sudo apt-get install scons
 sudo apt install python-pip
+pip install --user virtualenv
+virtualenv venv
+virtualenv -p /usr/bin/python3.5m venv
+source venv/bin/activate
 pip install -U Flask
 pip install flask-socketio
 pip install eventlet

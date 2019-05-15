@@ -33,9 +33,9 @@ testExec = env.Program( target = 'test', source = ['src/server/engine/Board.cpp'
 
 #append python in order to compile boost python modules
 if(platform.system() == "Linux"):
-   env.Append( CPPPATH = ['/usr/include/python2.7'] )
-   env.Append( LIBPATH = ['/usr/lib/python2.7'] )
-   env.Append( LIBS = [ 'boost_python' ] )
+   env.Append( CPPPATH = ['venv/include/python3.5m'] )
+   env.Append( LIBPATH = ['venv/lib/python3.5'] )
+   env.Append( LIBS = [ 'python3.5m', 'pthread', 'dl', 'util', 'm', 'libboost_python-py35' ] )
 
 elif(platform.system() == "Windows"):
    env.Append( CPPPATH = [ Dir('C:/Python37/include') ] )
