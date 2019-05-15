@@ -40,7 +40,6 @@ def handleConnect():
 def handleDisconnect():
     evh.handleDisconnection(flask.request.sid)
 
-
 @socketio.on('createRoom', namespace=namespace)
 def handleCreateRoom():
     evh.handleCreateRoom(flask.request.sid)

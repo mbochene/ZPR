@@ -42,6 +42,16 @@ var addClickHandler = function (socket) {
         socket.emit('clickedField', data);
     });
 }
+var addJoinHandler = function (button, socket) {
+    button.click(function (event) {
+        var data = {
+            roomId: $(this).parent().children('p.room-id').html(),
+            status: ''
+        }
+        console.log(data.roomId);
+        socket.emit('joinRoom', data)
+    });
+}
 var appendMessage = function (msg, sender) {
     var imgPath = '/static/img/user-512.png';
     if (sender == 'self') {
@@ -54,14 +64,7 @@ var appendMessage = function (msg, sender) {
     var chatlogs = document.getElementsByClassName('chatlogs')[0];
     chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
 }
-var handleJoinClick = function (socket) {
-    var data = {
-        roomId: $('#room-id-input').val(),
-        status: ''
-    }
-    $('#room-id-input').val('');
-    socket.emit('joinRoom', data)
-}
+
 var onJoin = function (data) {
     console.log(data);
     if (data.status == 'JOINED_ROOM') {
@@ -79,7 +82,7 @@ var onLeave = function () {
 var handleCreateClick = function (socket) {
     socket.emit('createRoom');
 }
-handleLeaveClick = function (socket) {
+var handleLeaveClick = function (socket) {
     socket.emit('leaveRoom')
 }
 var onGameStop = function (socket) {
@@ -105,6 +108,43 @@ var resetScore = function () {
     $('.score-x:first').html(0);
     $('.score-o:first').html(0);
 }
+var addNewRoom = function (data, socket) {
+    $('#rooms-list').append('<div class="rooms-list-position"></div>');
+    $('.rooms-list-position:last').append('<p class="room-info">' + data.roomInfo + '</p>');
+    $('.rooms-list-position:last').append('<p class="room-id">' + data.roomId + '</p>');
+    $('.rooms-list-position:last').append('<button class="join-room-button">Join room</button>');
+    addJoinHandler($('.join-room-button:last'), socket);
+}
+var onInitializeRoomsList = function (data, socket) {
+    for (var i in data) {
+        addNewRoom(data[i], socket);
+    }
+}
+var onActualizeView = function (data, socket) {
+    boardId = parseInt(data.id / 10);
+    $('#' + data.id).append('<img src="/static/img/' + data.inHtml + '.png">');
+    for (let i = 0; i < 9; ++i) {
+        $('.' + i).removeClass('clue');
+    }
+    for (let i = 0; i < data.toLighten.length; ++i) {
+        $('.' + data.toLighten[i]).addClass('clue');
+    }
+    if (data.localGameEnded) {
+        $('.' + boardId).hide();
+        $('#' + boardId).addClass('finishedlocal');
+        var localBoard = document.getElementById(boardId);
+        while (localBoard.firstChild) {
+            localBoard.removeChild(localBoard.firstChild);
+        }
+        $('#' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
+        if (data.globalGameEnded) {
+            var score = parseInt($('.score-' + data.localBoardWinner.toLowerCase() + ':first').html()) + 1;
+            $('.score-' + data.localBoardWinner.toLowerCase() + ':first').html(score);
+            recoverInitialBoard();
+            addClickHandler(socket);
+        }
+    }
+}
 $(document).ready(function () {
     namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
@@ -116,31 +156,9 @@ $(document).ready(function () {
     socket.on('stopGame', function () { onGameStop(socket); });
     socket.on('disconnect', function () { onDisconnect(socket); });
     socket.on('receivedMessage', function (data) { appendMessage(data.msg, data.who); });
-    socket.on('actualizeView', function (data) {
-        boardId = parseInt(data.id / 10);
-        $('#' + data.id).append('<img src="/static/img/' + data.inHtml + '.png">');
-        for (let i = 0; i < 9; ++i) {
-            $('.' + i).removeClass('clue');
-        }
-        for (let i = 0; i < data.toLighten.length; ++i) {
-            $('.' + data.toLighten[i]).addClass('clue');
-        }
-        if (data.localGameEnded) {
-            $('.' + boardId).hide();
-            $('#' + boardId).addClass('finishedlocal');
-            var localBoard = document.getElementById(boardId);
-            while (localBoard.firstChild) {
-                localBoard.removeChild(localBoard.firstChild);
-            }
-            $('#' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
-            if (data.globalGameEnded) {
-                var score = parseInt($('.score-' + data.localBoardWinner.toLowerCase() + ':first').html()) + 1;
-                $('.score-' + data.localBoardWinner.toLowerCase() + ':first').html(score);
-                recoverInitialBoard();
-                addClickHandler(socket);
-            }
-        }
-    });
+    socket.on('actualizeView', function (data) { onActualizeView(data, socket); });
+    socket.on('createRoom', function (data) { addNewRoom(data, socket) });
+    socket.on('initializeRoomsList', function (data) { onInitializeRoomsList(data, socket); });
     socket.on('joinRoom', function (data) { onJoin(data); });
     socket.on('leaveRoom', function () { onLeave(); })
     $('#create-room-button').click(function () { handleCreateClick(socket); });

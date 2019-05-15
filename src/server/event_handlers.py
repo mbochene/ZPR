@@ -2,9 +2,14 @@
 import flask_socketio as fsio
 import engine as en
 import room
-
+import string
+import random
 
 rooms = []
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 def getRoomClientIsConnectedTo(socketId):
@@ -22,19 +27,16 @@ def getRoomById(roomId):
 
 
 def handleCreateRoom(socketId):
-    roomId = str(socketId)[:4] + str(socketId)[-2:]
+    roomId = str(socketId)[-2:] + id_generator(4) + str(socketId)[:2]
     newRoom = room.Room(socketId, roomId)
     rooms.append({'socketId': socketId, 'room': newRoom})
     data = {
         'roomId': roomId,
+        'roomInfo': 'po prostu rum',
         'status': ''
     }
     handleJoinRoom(data, socketId)
-
-
-#def handleRemoveRoom(socketId):
-#    room = getRoomClientIsConnectedTo(socketId)
-#    if room is not None and room.hostSocketId == socketId
+    fsio.emit('createRoom', data, broadcast=True)
 
 
 def handleClickedField(data, socketId):
@@ -49,9 +51,7 @@ def handleClickedField(data, socketId):
     board = id // 10
     field = id % 10
     correct = game.makeMove(board, field)
-    print(correct, board, field, game.playableFields)
     if correct:
-        print(game.isBoardNotPlayable(board))
         if game.isBoardNotPlayable(board):
             game.playableFields.remove(board)
 
@@ -81,7 +81,6 @@ def handleClickedField(data, socketId):
         else:
             data['globalGameEnded'] = False
 
-        print(toLighten)
         for sid in room.session.clients:
             fsio.emit('actualizeView', data, room=sid)
 
@@ -129,6 +128,10 @@ def handleLeaveRoom(socketId):
 
 def handleConnection(socketId):
     print(socketId + " connected")
+    data = []
+    for el in rooms:
+        data.append({'roomInfo': 'po prostu rum', 'roomId': el['room'].roomId})
+    fsio.emit('initializeRoomsList', data, room=socketId)
 
 
 def handleDisconnection(socketId):

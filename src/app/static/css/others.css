@@ -1,0 +1,60 @@
+#welcome-info {
+    font-size: 30px;
+    text-align: center;
+}
+
+#create-room {
+    position: absolute;
+    left: 45%;
+    top: 25px;
+}
+
+#create-room-button {
+    position: absolute;
+    left: inherit;
+    top: inherit;
+    width: 200px;
+    height: 40px;
+}
+
+#join-room {
+    position: absolute;
+    left: 45%;
+    top: 95px;
+}
+
+.rooms-list-position {
+    margin-top: 2px;
+    border-radius: 5px;
+    width: 380px;
+    height: 30px;
+    background: rgba(0, 0, 0, .1);
+}
+
+.room-info {
+    margin-left: 3px;
+    display: inline-block;
+    width: 100px;
+    height: 20px;
+}
+
+.room-id {
+    margin-left: 25px;
+    display: inline-block;
+    width: 100px;
+    height: 20px;
+}
+
+.join-room-button {
+    margin-left: 15px;
+    display: inline-block;
+    width: 100px;
+    height: 25px;
+    background: rgba(235, 235, 235, .1);
+    border-radius: 5%;
+    overflow: hidden;
+}
+
+.join-room-button:hover {
+    background: rgba(205, 205, 155, .7);
+}

@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/game.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/score.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/others.css') }}">
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -20,8 +21,13 @@
             <button id="create-room-button">Create room</button>
         </div>
         <div id="join-room">
-            <input id="room-id-input" type="text" placeholder="Type in room id">
-            <button id="join-room-button">Join room</button>
+            <div id="rooms-list">
+                <h1>Rooms list:</h1>
+                <div class="rooms-list-position">
+                    <p class="room-info">Room name</p>
+                    <p class="room-id">Room id</p>               
+                </div>
+            </div>
         </div>
     </div>
     <div id="in-room">

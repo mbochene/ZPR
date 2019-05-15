@@ -33,11 +33,6 @@ table {
     width: 55%;
 }
 
-#welcome-info {
-    font-size: 30px;
-    text-align: center;
-}
-
 .box {
     float: left;
     height: 800px;
@@ -93,6 +88,6 @@ table {
 }
 
 .clue {
-    background:rgb(235, 90, 90, 1);
+    background: rgb(235, 90, 90, 1);
     box-shadow: 2px 2px 2px 2px black;
 }
