@@ -48,10 +48,10 @@ cpplib = env.SharedLibrary( target = 'src/server/engine', source = ['src/server/
 
 if(platform.system() == "Linux"):
    target1 = 'src/server/engine.so'
-   target2 = 'scripts/Linux/test'
+   target2 = 'src/server/engine/tests/test'
 elif(platform.system() == "Windows"):
    target1 = 'src/server/engine.pyd'
-   target2 = 'scripts/Windows/test.exe'
+   target2 = 'src/server/engine/tests/test.exe'
 
 env.Command( target1, cpplib, renameDynamicLib )
 env.Command( target2, testExec, renameDynamicLib )
