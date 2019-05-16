@@ -5,7 +5,7 @@ sudo apt-get install python3.5
 sudo apt-get install libboost-all-dev
 sudo apt-get install scons
 sudo apt install python-pip
-pip3 install --user virtualenv
+sudo apt install python-virtualenv
 virtualenv venv
 virtualenv -p /usr/bin/python3.5m venv
 source venv/bin/activate
