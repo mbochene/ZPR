@@ -1,5 +1,11 @@
 #include "headers/Board.hpp"
 #include <iostream>
+
+/** \file Board.cpp
+*   \brief Plik zawierający definicje metod klasy "Board".
+*/
+
+
 Board::Board() : emptyFields(9), end(false), winner(PlayerSymbol::NONE)
 {
     for(int i=0;i<9;i++)

@@ -39,6 +39,8 @@ Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie
 Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt: 
 **generate_doc.sh / generate_doc.bat**
 
+Poszczególne pliki html wchodzące w skład dokumentacji będą znajdowały się w katalogu docs/html.
+
 ## Uwagi
 Aby usunąć wirtualne środowisko tworzone przy wykonywaniu się skryptu prequisities należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt:
  **remove_venv.sh / remove_venv.bat**.

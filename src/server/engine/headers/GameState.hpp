@@ -4,27 +4,69 @@
 #include <memory>
 #include <vector>
 
-typedef std::shared_ptr<Board> PBoard;                      // nie unique, bo boost python ma problem
+typedef std::shared_ptr<Board> PBoard;
 
+/** \file GameState.hpp
+*   \brief Plik nagłówkowy zawierający definicję klasy "GameState".
+*/
+
+
+/*! \brief Klasa reprezentująca pojedyńczą rozgrywkę.
+*
+*   W jej skład wchodzi 9 plansz mikro, plansza makro oraz zmienne pozwalające na rozstrzygnięcie stanu rozgrywki.
+*/
 class GameState
 {
-    Board::PlayerSymbol whoseTurn;                  // czyja tura (przyjmuje wartość 1 lub 2)
-    int lastChosenBoard;            // numer planszy, na której odbył się ostatni prawidłowy ruch
-    int lastChosenField;            // ostatnie prawidłowo wybrane pole
-    int nextBoard;                  // numer planszy, na której ma być wykonany następny ruch; jeśli z przedziału [0;8], to na 1 z 9 plansz; jeśli 9, to na każdej planszy (jeśli nie wygrana/remis)
-    std::vector<PBoard> localBoards;              // wektor 9 lokalnych plansz
-    PBoard globalBoard;              // globlana plansza
+    Board::PlayerSymbol whoseTurn;                  // czyja tura (przyjmuje wartość X lub O)
+    int lastChosenBoard;                            // numer planszy, na której odbył się ostatni prawidłowy ruch
+    int lastChosenField;                            // ostatnie prawidłowo wybrane pole
+    int nextBoard;                                  // numer planszy, na której ma być wykonany następny ruch; jeśli z przedziału [0;8], to na 1 z 9 plansz; jeśli 9, to na każdej planszy, na której rozgrywka jeszcze się nie zakończyła
+    std::vector<PBoard> localBoards;                // wektor 9 lokalnych plansz
+    PBoard globalBoard;                             // globlana plansza
 
     public:
-    GameState();
+    GameState();        /**< Konstruktor. Tworzy strukturę danych reprezentującą nową rozgrywkę. */
     ~GameState();
 
-    bool makeMove(const int &board, const int &field); // metoda pozwalająca na "postawienie" kółka lub krzyżyka na danej planszy; zwraca true i zmienia wartości zmiennych lokalnych, jeśli operacja się powiedzie
-    Board::PlayerSymbol checkLocalWin();   //metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy lokalnej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
-    Board::PlayerSymbol checkGlobalWin();  // metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globlanej; zwraca numer gracza jeśli tak; w.p.p zwraca 0
-    Board::PlayerSymbol getWhoseTurn();    // metoda zwracająca numer gracza, który ma ruch
-    bool isBoardNotPlayable(const int &board); // metoda zwracająca informację czy na danej planszy można wykonać ruch
-    int getNextBoard();    // zwraca wartość zmiennej nextBoard
+    /** \brief  Metoda pozwalająca na "postawienie" kółka lub krzyżyka na danej planszy.
+    *
+    *   Zwraca true i zmienia wartości zmiennych lokalnych, jeśli operacja się powiedzie.
+    *   @param board Numer wskazanej planszy.
+    *   @param field Numer pola na wskazanej planszy.
+    */
+    bool makeMove(const int &board, const int &field);
+
+    /** \brief  Metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy lokalnej. 
+    *
+    *   Zwraca symbol gracza, jeśli tak.\n
+    *   W przeciwnym wypadku zwraca symbol NONE.
+    */
+    Board::PlayerSymbol checkLocalWin();
+
+     /** \brief  Metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globalnej. 
+    *
+    *   Zwraca symbol gracza, jeśli tak.\n
+    *   W przeciwnym wypadku zwraca symbol NONE.
+    */
+    Board::PlayerSymbol checkGlobalWin();
+
+    /** \brief  Metoda zwracająca symbol gracza, który może w danej chwili wykonać ruch.
+    */
+    Board::PlayerSymbol getWhoseTurn();
+
+    /** \brief  Metoda zwracająca informację czy na danej planszy nie można już wykonać żadnego ruchu. 
+    *
+    *   Zwraca true, jeśli nie można.
+    *   @param board Numer sprawdzanej planszy.
+    */
+    bool isBoardNotPlayable(const int &board);
+
+    /** \brief  Zwraca wartość zmiennej nextBoard. 
+    *
+    *   Jeśli wartość nextBoard należy do przedziału [0;8], to następny ruch może się odbyć na 1 z 9 plansz.\n
+    *   Jeśli wartość nextBoard to 9, to następny ruch może się odbyć na każdej planszy, na której rozgrywka jeszcze się nie zakończyła.
+    */
+    int getNextBoard();
 };
 
 #endif

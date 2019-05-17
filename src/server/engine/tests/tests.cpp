@@ -8,6 +8,10 @@
 using pick_pair = std::pair<int, Board::PlayerSymbol>;
 using move_pair = std::pair<int, int>;
 
+/** \file tests.cpp
+*   \brief Plik zawierający testy jednostkowe silnika gry.
+*/
+
 void pickFields(Board &x, std::initializer_list<pick_pair> picks)
 {
     for (const pick_pair &pick : picks)
