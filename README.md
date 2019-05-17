@@ -16,7 +16,7 @@ Technologie wykorzystywane w projekcie:
   3. boost 1_70_0 (biblioteki linkowane dynamicznie; zlokalizowany w C:\boost_1_70_0 , jeśli scons ma zadziałać bez modyfikacji)
   4. pip3 (powinien być domyślnie zainstalowany wraz z Pythonem)
   5. scons (powinien być domyślnie zainstalowany wraz z Pythonem)
-  6. doxygen (min. 1.8.15)
+  6. doxygen (min. 1.8.15; ścieżka do doxygen **MUSI** być ustawiona jako zmienna środowiskowa, aby skrypt **generate_doc.bat** mógł się wykonać)
   7. virtualenv, Flask, flask-socketio, eventlet, pyd, pytest (do zainstalowania poprzez skrypt -> **scripts/Windows/prequisities.bat**)
 - **Linux (Ubuntu 16.04 Xenial)**
   1. g++
@@ -34,6 +34,10 @@ Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie
 ### Uruchamianie serwera (wraz z automatycznymi testami)
 Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt: 
 **runServer.sh / runServer.bat**
+
+### Generacja dokumentacji
+Należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt: 
+**generate_doc.sh / generate_doc.bat**
 
 ## Uwagi
 Aby usunąć wirtualne środowisko tworzone przy wykonywaniu się skryptu prequisities należy wejść do katalogu scripts, wybrać katalog Linux/Windows, a następnie uruchomić skrpyt:
