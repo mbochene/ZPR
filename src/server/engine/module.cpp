@@ -1,6 +1,11 @@
 #include "headers/GameState.hpp"
 #include <boost/python.hpp>
 
+/** \file module.cpp
+*   \brief Plik zawierający definicję modułów ("GameState" oraz "PlayerSymbol") wchodzących w skład biblioteki dynamicznej używanej przez serwer napisany w Pythonie.
+*/
+
+
 BOOST_PYTHON_MODULE(engine)
 {
     using namespace boost::python;

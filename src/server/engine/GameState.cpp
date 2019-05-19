@@ -1,6 +1,12 @@
 #include "headers/GameState.hpp"
 #include "headers/Board.hpp"
 #include <iostream>
+
+/** \file GameState.cpp
+*   \brief Plik zawierający definicje metod klasy "GameState".
+*/
+
+
 GameState::GameState() : whoseTurn(Board::PlayerSymbol::X), lastChosenBoard(0), nextBoard(9)
 {
     for(int i=0; i<9; i++)
