@@ -1,60 +1,66 @@
 #welcome-info {
-    font-size: 30px;
-    text-align: center;
+  font-size: 30px;
+  text-align: center;
 }
 
 #create-room {
-    position: absolute;
-    left: 45%;
-    top: 25px;
+  position: absolute;
+  left: 45%;
+  top: 25px;
 }
 
-#create-room-button {
-    position: absolute;
-    left: inherit;
-    top: inherit;
-    width: 200px;
-    height: 40px;
+.create-button {
+  position: fixed;
+  left: 25px;
+  top: 5px;
+  text-align: center;
 }
 
 #join-room {
-    position: absolute;
-    left: 45%;
-    top: 95px;
+  position: absolute;
+  left: 45%;
+  top: 95px;
+}
+
+#rooms-list {
+  position: fixed;
+  left: 325px;
+  top: 5px;
+  height: inherit;
+  width: 600px;
+  background-color: rgba(214, 202, 130, 0.6);
 }
 
 .rooms-list-position {
-    margin-top: 2px;
-    border-radius: 5px;
-    width: 380px;
-    height: 30px;
-    background: rgba(0, 0, 0, .1);
+  margin-top: 3px;
+  border-radius: 5px;
+  width: 600px;
+  height: 30px;
+  background-color: rgba(214, 202, 130, 0.9);
+  opacity: 0.8;
 }
 
-.room-info {
-    margin-left: 3px;
-    display: inline-block;
-    width: 100px;
-    height: 20px;
+.room-name, .room-mode, .room-playtime, .room-id, .join-room-button {
+  display: inline-block;
+  margin-left: 3px;
+  width: 100px;
+  height: 20px;
+  vertical-align: middle;
+  text-align: center;
 }
 
-.room-id {
-    margin-left: 25px;
-    display: inline-block;
-    width: 100px;
-    height: 20px;
+.room-playtime {
+  width: 150px;
 }
 
 .join-room-button {
-    margin-left: 15px;
-    display: inline-block;
-    width: 100px;
-    height: 25px;
-    background: rgba(235, 235, 235, .1);
-    border-radius: 5%;
-    overflow: hidden;
+  margin-left: 15px;
+  height: 25px;
+  background: rgba(235, 235, 235, .1);
+  border-radius: 5%;
+  overflow: hidden;
 }
 
 .join-room-button:hover {
-    background: rgba(205, 205, 155, .7);
+  background: rgba(205, 205, 155, .7);
 }

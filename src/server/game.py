@@ -1,3 +1,4 @@
+#!venv/bin/python3
 import engine as en
 class Game:
     def __init__(self):

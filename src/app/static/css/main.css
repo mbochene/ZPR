@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: rgba(214, 202, 130, 0.5);
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+}

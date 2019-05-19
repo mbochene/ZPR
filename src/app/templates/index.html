@@ -2,77 +2,124 @@
 <html>
 
 <head>
-    <title>
-        Ultimate Tic Tac Toe
-    </title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/game.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/score.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/others.css') }}">
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <title>
+    Ultimate Tic Tac Toe
+  </title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/game.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/score.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/others.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/create_room_popup.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/timer.css') }}">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/create_room_popup.js') }}"></script>
 </head>
 
 <body>
-    <div id="out-of-room">
-        <div id="create-room">
-            <button id="create-room-button">Create room</button>
+  <div id="out-of-room">
+    <div id="create-room">
+      <div class="form-popup" id="create-room-popup">
+        <div class="form-container">
+          <div class="input-bar">
+            <label for="room-name"><b>Room Name</b></label>
+            <input id="room-name" type="text" placeholder="Enter Room Name" name="room-name">
+          </div>
+          <div class="input-bar">
+            <label for="mode-choice"><b>Advanced Mode</b></label>
+            <input id="mode-choice" type="checkbox" name="mode-choice">
+          </div>
+          <div class="input-bar">
+            <label for="playtime"><b>Play Time</b></label>
+            <input id="playtime" type="number" name="play-time" min="10" max="1200">
+          </div>
+          <button id="create-room-button" type="submit" class="btn" onClick="closeForm()">Create</button>
+          <button type="submit" class="btn cancel" onclick="closeForm()">Close</button>
         </div>
-        <div id="join-room">
-            <div id="rooms-list">
-                <h1>Rooms list:</h1>
-                <div class="rooms-list-position">
-                    <p class="room-info">Room name</p>
-                    <p class="room-id">Room id</p>               
-                </div>
-            </div>
-        </div>
+      </div>
+      <button class="open-button create-button" onClick="openForm()">Create room</button>
     </div>
-    <div id="in-room">
-        <div class="chatbox box">
-            <div class="chatlogs">
-            </div>
-            <div class="chat-form">
-                <textarea id="textfield" placeholder="Type in your message"></textarea>
-                <button id="sender">Send</button>
-            </div>
+    <div id="join-room">
+      <div id="rooms-list">
+        <h1>Rooms list:</h1>
+        <div class="rooms-list-position">
+          <p class="room-name">Name</p>
+          <p class="room-mode">Mode</p>
+          <p class="room-playtime">Play time</p>
+          <p class="room-id">Id</p>
         </div>
-        <div id="leave-room">
-            <button id="leave-room-button">
-                Leave room
-            </button>
+      </div>
+    </div>
+  </div>
+  <div id="in-room">
+    <div class="chatbox box">
+      <div class="chatlogs">
+      </div>
+      <div class="chat-form">
+        <textarea id="textfield" placeholder="Type in your message"></textarea>
+        <button id="sender">Send</button>
+      </div>
+    </div>
+    <div id="welcome-info">
+      Waiting for players...
+    </div>
+    <div id="game">
+      <div class="box gamebox">
+        <table id="globalboard">
+        </table>
+      </div>
+    </div>
+    <div class="box scorebox">
+      <h1>
+        <b>Score table</b>
+      </h1>
+      <div class="score">
+        <div class="scorer-img">
+          <img src="/static/img/X.png">
         </div>
-        <div id="welcome-info">
-            Waiting for players...
+        <div class="score-x">
+          0
         </div>
-        <div id="game">
-            <div class="box gamebox">
-                <table id="globalboard">
+      </div>
+      <div class="score">
+        <div class="scorer-img">
+          <img src="/static/img/O.png">
+        </div>
+        <div class="score-o">
+          0
+        </div>
+      </div>
+    </div>
+    <div id="leave-room">
+      <button id="leave-room-button">
+        Leave room
+      </button>
+    </div>
+    <div class="box timerbox">
+      <h1>
+        <b>Timers</b>
+      </h1>
+      <div class="timer">
+        <div class="timer-img">
+          <img src="/static/img/X.png">
+        </div>
+        <div class="timer-x">
+          00:00
+        </div>
+      </div>
+      <div class="timer">
+        <div class="timer-img">
+          <img src="/static/img/O.png">
+        </div>
+        <div class="timer-o">
+          00:00
+        </div>
+      </div>
+    </div>
+  </div>
 
-                </table>
-            </div>
-            <div class="box scorebox">
-                <div class="score">
-                    <div class="scorer-img">
-                        <img src="/static/img/X.png">
-                    </div>
-                    <div class="score-x">
-                        0
-                    </div>
-                </div>
-                <div class="score">
-                    <div class="scorer-img">
-                        <img src="/static/img/O.png">
-                    </div>
-                    <div class="score-o">
-                        0
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>

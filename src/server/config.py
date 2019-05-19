@@ -1,24 +1,27 @@
-#!/usr/bin/env python
+#!venv/bin/python3
 import flask
 import flask_socketio as fsio
 import os
 import event_handlers as evh
+import eventlet as evt
+import time
+import clock
 
-appDir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app')
-templateDir = os.path.join(appDir, 'templates')
-staticDir = os.path.join(appDir, 'static')
+evt.monkey_patch()
+APP_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app')
+TEMPLATE_DIR = os.path.join(APP_DIR, 'templates')
+STATIC_DIR = os.path.join(APP_DIR, 'static')
 
-app = flask.Flask(__name__, template_folder=templateDir,
-                  static_folder=staticDir)
+app = flask.Flask(__name__, template_folder=TEMPLATE_DIR,
+                  static_folder=STATIC_DIR)
 app.config['SECRET_KEY'] = 'tajemnica'
 socketio = fsio.SocketIO(app)
-
 namespace = None
 
 
 @app.route('/')
 def sessions():
-    return flask.render_template('index.html', async_mode=socketio.async_mode)
+    return flask.render_template('index.html', async_mode='eventlet')
 
 
 @socketio.on('clickedField', namespace=namespace)
@@ -40,14 +43,20 @@ def handleConnect():
 def handleDisconnect():
     evh.handleDisconnection(flask.request.sid)
 
+
 @socketio.on('createRoom', namespace=namespace)
-def handleCreateRoom():
-    evh.handleCreateRoom(flask.request.sid)
+def handleCreateRoom(data):
+    evh.handleCreateRoom(data, flask.request.sid)
+
 
 @socketio.on('joinRoom', namespace=namespace)
 def handleJoinRoom(data):
-    evh.handleJoinRoom(data, flask.request.sid)
+    gameActivated, room = evh.handleJoinRoom(data, flask.request.sid)
+    if gameActivated and room.advancedMode:
+        socketio.start_background_task(target=clock.clock, room=room)
 
 @socketio.on('leaveRoom', namespace=namespace)
 def handleLeaveRoom():
-    evh.handleLeaveRoom(flask.request.sid)
+    gameActivated, room = evh.handleLeaveRoom(flask.request.sid)
+    if gameActivated and room.advancedMode:
+        socketio.start_background_task(target=clock.clock, room=room)

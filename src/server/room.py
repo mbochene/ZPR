@@ -1,18 +1,46 @@
-#!/usr/bin/env python
+#!venv/bin/python3
 import game
-import session
-import flask_socketio as fsio
+import time
+
+
 class Room:
-    def __init__(self, socketId, roomId):
-        self.session = session.Session()
-        self.roomId = roomId
+    def __init__(self, socketId, roomId, roomName, advancedMode=False, playTime=0):
         self.hostSocketId = socketId
-    def addClient(self, socketId):
-        self.session.connectClient(socketId)
-    def removeClient(self, socketId):
-        return self.session.disconnectClient(socketId)
+        self.id = roomId
+        self.name = roomName
+        self.advancedMode = advancedMode
+        self.playTime = playTime
+        self.numberOfConnectedClients = 0
+        self.clients = []
+        self.whoseSocket = {}
+        self.game = game.Game()
+        self.isGameActive = False
+
+    def connectClient(self, socketId):
+        self.numberOfConnectedClients += 1
+        self.clients.append(socketId)
+        dictLength = len(self.whoseSocket)
+        if dictLength < 2:
+            self.whoseSocket[socketId] = dictLength + 1
+    # zwraca true jesli odlacza sie jeden z grajacych; w.p.p. zwraca false
+
+    def disconnectClient(self, socketId):
+        self.numberOfConnectedClients -= 1
+        self.clients.remove(socketId)
+        if self.whoseSocket.get(socketId) != None:
+            self.isGameActive = False
+            self.game.prepareNewGame()
+            self.whoseSocket.pop(socketId)
+            for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
+                # dodac emita restartujacego gre
+                self.whoseSocket[socket] = 1
+            if self.numberOfConnectedClients >= 2:
+                self.whoseSocket[self.clients[1]] = 2
+            return True
+        return False
+
     def isClientConnected(self, socketId):
-        for sid in self.session.clients:
+        for sid in self.clients:
             if sid == socketId:
                 return True
         return False
