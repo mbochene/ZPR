@@ -7,6 +7,7 @@ import timer as tm
 ##  clock - wołana jako funkcja celu dla metody start_background_task
 #                  na rzecz obiektu app (zdefiniowanego w pliku config.py)
 #                  klasy flask.Flask
+# @param room - pokój, dla którego odmierzany jest czas rozgrywki <br>
 # <dl><dt style="font-weight: bold;">funkcjonalność:</dt><br>
 # <dd>Funkcja odmierza czas dla grających użytkowników.<br>
 # Odmierzanie czasu opiera sie o funkcjonalność udostępnioną przez obiekty
@@ -19,7 +20,8 @@ import timer as tm
 # jako argument wywołania funkcji.<br>
 # Dodatkowo, funkcja przy kazdym obiegu pętli sprawdza, czy któryś z grających
 # użytkowników nie opuścił pokoju (porównanie kluczy dla słowników timers oraz
-# room.whoseSocket) - jeśli taka sytuacja wystąpiła, należy przerwać wątek.
+# room.whoseSocket) lub czy gra nie została zakończona przed czasem -
+# jeśli taka sytuacja wystąpiła, należy przerwać wątek.
 # </dd></dl> <br><br>
 ## <span style="font-size: 20px;"><b>zmienne lokalne:</b></span><br><br>
 ## <b>counter</b> - mierzy ilośc obiegów pętli. Co 10 obieg pętli (3 sekundy) emitowane
@@ -40,8 +42,9 @@ import timer as tm
 #                      Jeśli zmienne te się różnią (nastąpiła zmiana tury),
 #                      wówczas emitowane jest zdarzenie 'actualizeClock'
 #                      w celu synchronizacji widoku zegarów u użytkownika.
-# @param room - pokój, dla którego odmierzany jest czas rozgrywki <br>
-
+## scores - tablica wyników. W każdym obiegu pętli porównywana jest z aktualną
+#           tablicą wyników. Jeśli tablice te się różnią, wówczas wątek jest
+#           przerywany.
 
 def clock(room):
 
@@ -52,14 +55,13 @@ def clock(room):
         room.clients[0]: tm.Timer(room.playTime),
         room.clients[1]: tm.Timer(room.playTime)
     }
+    scores = list(game.scoreTable.values())
     nextMovingSocketId = next((sid for sid, symbol in room.whoseSocket.items(
     ) if symbol == game.getWhoseTurn()), None)
     while True:
         counter += 1
         # porównanie kluczy słowników timers oraz room.whoseSocket w celu
         # wykrycia sytuacji, w której jeden z grających użytkowników opuścił pokój
-        if list(room.whoseSocket.keys()) != list(timers.keys()):
-            return
         nowMovingSocketId = nextMovingSocketId
         timer = timers.get(nowMovingSocketId)
         timer.start()
@@ -77,6 +79,8 @@ def clock(room):
                 }
                 for sid in room.clients:
                     fsio.emit('actualizeClock', data, room=sid, namespace=None)
+        if list(room.whoseSocket.keys()) != list(timers.keys()) or scores != list(game.scoreTable.values()):
+            return
         nextMovingSocketId = next((sid for sid, symbol in room.whoseSocket.items(
         ) if symbol == game.getWhoseTurn()), None)
         if nowMovingSocketId != nextMovingSocketId:
@@ -111,4 +115,3 @@ def clock(room):
                               room=sid, namespace=None)
                 config.socketio.start_background_task(target=clock, room=room)
             return
-        print(nowMovingSocketId + ': ' + str(timer.timeLeft))

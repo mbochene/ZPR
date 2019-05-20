@@ -111,8 +111,8 @@ var onJoin = function(data) {
     $('#game').hide();
     $('.timerbox').hide()
     console.log(data)
-    if (data.advancedMode) {
-      advancedMode = true;
+    advancedMode = data.advancedMode
+    if (advancedMode) {
       $.getScript("../static/js/clock.js").then(function() {
         window.timerX = new Clock($('.timer-x:first'), data.playTime);
         window.timerO = new Clock($('.timer-o:first'), data.playTime);
@@ -231,6 +231,7 @@ var onActualizeView = function(data, socket) {
       $('.score-' + data.globalGameWinner.toLowerCase() + ':first').html(score);
       recoverInitialBoard();
       addClickHandler(socket);
+      onGameStart()
     }
   }
 }
