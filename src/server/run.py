@@ -1,6 +1,6 @@
 #!venv/bin/python3
-from config import socketio, app
+import config
 import threading
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', debug=True)
+    config.socketio.run(config.app, host='0.0.0.0', debug=True)

@@ -42,7 +42,6 @@ def handleCreateRoom(data, socketId):
         'mode': mode,
         'playTime': playTime
     }
-    print(data)
     fsio.emit('createRoom', data, broadcast=True)
     handleJoinRoom(data, socketId)
 
@@ -111,7 +110,6 @@ def handleJoinRoom(data, socketId):
         data['status'] = 'JOINED_ROOM'
         fsio.emit('joinRoom', data, room=socketId)
         room.connectClient(socketId)
-        print(room.clients)
         if len(room.whoseSocket) >= 2:
             if not room.isGameActive:
                 gameActivated = True
@@ -144,10 +142,8 @@ def handleLeaveRoom(socketId):
 
 
 def handleConnection(socketId):
-    print(socketId + " connected")
     data = []
     for el in rooms:
-        print(socketId + " connected")
         room = el['room']
         mode = 'casual'
         playTime = '-'

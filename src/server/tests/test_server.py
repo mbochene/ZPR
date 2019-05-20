@@ -1,71 +1,203 @@
-#!/usr/bin/env python
-from config import *
-from event_handlers import *
-from game import *
-import os
+#!venv/bin/python3
 import sys
+import os
 import inspect
 import pytest
-current_dir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
-parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(
+    inspect.getfile(inspect.currentframe()))))
 sys.path.insert(0, parent_dir)
-
+import config
+import event_handlers as evh
+import room
 
 namespace = None
 
 
-def testNumberOfConnectedClientsAfterConnection():
-    testClient = socketio.test_client(app, namespace)
-    assert session.numberOfConnectedClients == 1
+def testJoinRoom():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    resp = testClient2.get_received(namespace)
+    room = evh.getRoomById(roomId)
+    assert resp[len(resp) - 2]['args'][0][u'roomId'] == roomId
+    assert resp[len(resp) - 2]['args'][0][u'advancedMode'] == advancedMode
+    assert resp[len(resp) - 2]['args'][0][u'playTime'] == playTime
+    assert resp[len(resp) - 2]['args'][0][u'status'] == 'JOINED_ROOM'
+    assert room.numberOfConnectedClients == 2
     testClient.disconnect()
-
-
-def testFirstConnectedPlayerBecomesPlayer1():
-    testClient = socketio.test_client(app, namespace)
-    assert session.whoseSocket[testClient.sid] == 1
-    testClient.disconnect()
-
-
-def testSecondConnectedPlayerBecomesPlayer2():
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
-    assert session.whoseSocket[testClient2.sid] == 2
-    testClient1.disconnect()
     testClient2.disconnect()
 
 
-def testSecondConnectedPlayerBecomesPlayer1AfterFirstDisconnection():
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
-    testClient1.disconnect()
-    assert session.whoseSocket[testClient2.sid] == 1
+def testPlayerWhoJoinsRoomFirstBecomesPlayer1():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    assert room.whoseSocket[testClient.sid] == 1
+    testClient.disconnect()
+    testClient2.disconnect()
+
+
+def testPlayerWhoJoinsRoomSecondBecomesPlayer2():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    assert room.whoseSocket[testClient2.sid] == 2
+    testClient.disconnect()
+    testClient2.disconnect()
+
+
+def testSecondlyJoinedPlayerBecomesPlayer1AfterFirstLeaves():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    testClient.disconnect()
+    assert room.whoseSocket[testClient2.sid] == 1
     testClient2.disconnect()
 
 
 def testThirdConnectedPlayerIsNotPresentInSocketsDictionary():
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
-    testClient3 = socketio.test_client(app, namespace)
-    assert session.whoseSocket.get(testClient3.sid) == None
-    testClient1.disconnect()
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    testClient3 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    testClient3.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    assert room.whoseSocket.get(testClient3.sid) is None
+    testClient.disconnect()
     testClient2.disconnect()
     testClient3.disconnect()
 
 
-def testGameIsActiveAfterSecondPlayerConnection():
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
-    assert session.isGameActive
-    testClient1.disconnect()
+def testGameIsActiveWhenSecondPlayerJoinsRoom():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    assert room.isGameActive
+    testClient.disconnect()
     testClient2.disconnect()
 
 
-def testGameIsNotActiveAfterOneOfTwoPlayersDisconnection():
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
-    testClient1.disconnect()
-    assert not session.isGameActive
+def testGameIsNotActiveWhenOneOfTwoPlayersLeavesRoom():
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+    room = evh.getRoomById(roomId)
+    testClient.disconnect()
+    assert not room.isGameActive
     testClient2.disconnect()
 
 
@@ -79,20 +211,38 @@ for i in range(9):
                          parameters
                          )
 def testClickOnSquareActivatesProperBoard(id, result):
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
+
     data = {
         'id': id,
         'inHtml': '',
         'toLighten': [],
         'localGameEnded': False,
         'localBoardWinner': '',
-        'globalGameEnded': False
+        'globalGameEnded': False,
+        'globalGameWinner': ''
     }
-    testClient1.emit('clickedField', data)
-    resp = testClient1.get_received(namespace)
+    testClient.emit('clickedField', data)
+    resp = testClient.get_received(namespace)
     assert resp[len(resp) - 1]['args'][0][u'toLighten'] == result
-    testClient1.disconnect()
+    testClient.disconnect()
     testClient2.disconnect()
 
 
@@ -109,22 +259,39 @@ parameters = [
                          )
 def testClickOnSquareMovingOponentToAlreadyWonBoardActivatesAllBoards(client1Moves, client2Moves):
     result = [1, 2, 3, 4, 5, 6, 7, 8]
-    testClient1 = socketio.test_client(app, namespace)
-    testClient2 = socketio.test_client(app, namespace)
+    testClient = config.socketio.test_client(config.app, namespace)
+    testClient2 = config.socketio.test_client(config.app, namespace)
+    roomName = 'roomname'
+    advancedMode = False
+    playTime = 0
+    testClient.emit('createRoom', {
+        'roomName': 'roomname',
+        'advancedMode': False,
+        'playTime': 0,
+    })
+    resp = testClient.get_received(namespace)
+    roomId = resp[len(resp) - 1]['args'][0][u'roomId']
+    testClient2.emit('joinRoom', {
+        'roomId': roomId,
+        'advancedMode': '',
+        'playTime': '',
+        'status': ''
+    })
     data = {
         'id': '',
         'inHtml': '',
         'toLighten': [],
         'localGameEnded': False,
         'localBoardWinner': '',
-        'globalGameEnded': False
+        'globalGameEnded': False,
+        'globalGameWinner': ''
     }
     for i in range(len(client1Moves)):
         data['id'] = client1Moves[i]
-        testClient1.emit('clickedField', data)
+        testClient.emit('clickedField', data)
         data['id'] = client2Moves[i]
         testClient2.emit('clickedField', data)
     resp = testClient2.get_received(namespace)
     assert resp[len(resp) - 1]['args'][0][u'toLighten'] == result
-    testClient1.disconnect()
+    testClient.disconnect()
     testClient2.disconnect()

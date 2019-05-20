@@ -2,6 +2,7 @@
 import flask
 import flask_socketio as fsio
 import os
+import sys
 import event_handlers as evh
 import eventlet as evt
 import time
@@ -23,6 +24,9 @@ namespace = None
 def sessions():
     return flask.render_template('index.html', async_mode='eventlet')
 
+@app.route('/shutdownServer')
+def shutdown():
+    socketio.stop()
 
 @socketio.on('clickedField', namespace=namespace)
 def handleClick(data):
