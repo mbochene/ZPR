@@ -103,6 +103,8 @@ var appendMessage = function(msg, sender) {
 }
 var onJoin = function(data) {
   if (data.status == 'JOINED_ROOM') {
+    window.timerX = undefined;
+    window.timerO = undefined;
     $('#out-of-room').hide();
     $('#in-room').show();
     $('#welcome-info').show();
