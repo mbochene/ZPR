@@ -1,3 +1,41 @@
+class Clock {
+  constructor(timerTag, timeLeft) {
+    this.timerTag = timerTag;
+    this.timeLeft = timeLeft;
+    this.playTime = timeLeft;
+    this.setHtml();
+  }
+  reset = function() {
+    this.timeLeft = this.playTime;
+    this.setHtml();
+  }
+  setTimeLeft = function(timeLeft) {
+    this.timeLeft = timeLeft;
+  }
+  getTimeLeft = function() {
+    return this.timeLeft;
+  }
+  setHtml = function() {
+    let minutes = parseInt(this.timeLeft / 60);
+    let seconds = parseInt(this.timeLeft - minutes * 60);
+    let time = (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+    this.timerTag.html(time);
+  }
+  countdown = function() {
+    this.timeLeft -= 0.3;
+    this.setHtml()
+    if (this.timeLeft <= 0) return;
+    this.startClock();
+  }
+  startClock = function() {
+    this.timer = setTimeout(this.countdown.bind(this), 300)
+  }
+  stopClock = function() {
+    clearTimeout(this.timer);
+  }
+}
+var timerX, timerO;
+var advancedMode = false;
 var generateLocalBoard = function(id) {
   if (id % 3 == 0) {
     $('#globalboard').append('<tr id="row' + parseInt(id / 3) + '"></tr>');
@@ -48,7 +86,6 @@ var addJoinHandler = function(button, socket) {
       roomId: $(this).parent().children('p.room-id').html(),
       status: ''
     }
-    console.log(data.roomId);
     socket.emit('joinRoom', data)
   });
 }
@@ -65,12 +102,23 @@ var appendMessage = function(msg, sender) {
   chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
 }
 var onJoin = function(data) {
-  console.log(data);
   if (data.status == 'JOINED_ROOM') {
     $('#out-of-room').hide();
     $('#in-room').show();
     $('#welcome-info').show();
     $('#game').hide();
+    $('.timerbox').hide()
+    console.log(data)
+    if (data.advancedMode) {
+      advancedMode = true;
+      $.getScript("../static/js/clock.js").then(function() {
+        window.timerX = new Clock($('.timer-x:first'), data.playTime);
+        window.timerO = new Clock($('.timer-o:first'), data.playTime);
+        console.log(window.timerX);
+      }, function(err) {
+        console.log(err);
+      });
+    }
   }
 }
 var onLeave = function() {
@@ -86,9 +134,9 @@ var handleCreateClick = function(socket) {
   $('#room-name').val('')
   $('#playtime').val('')
   if (roomName == '') {
-    roomName = 'roomname'
+    roomName = 'roomname';
   }
-  if (mode && playTime == '') {
+  if (playTime == '') {
     playTime = 600
   }
   var data = {
@@ -103,7 +151,11 @@ var handleLeaveClick = function(socket) {
   socket.emit('leaveRoom')
 }
 var onGameStop = function(socket) {
-  console.log("stop");
+  $('.timerbox').hide();
+  if (advancedMode) {
+    timerX.stopClock();
+    timerO.stopClock();
+  }
   $('#game').hide();
   $('#welcome-info').show();
   recoverInitialBoard();
@@ -113,8 +165,24 @@ var onGameStop = function(socket) {
 var onGameStart = function() {
   $('#game').show();
   $('#welcome-info').hide();
-  console.log("start");
 
+  function waitForClocks() {
+    if (typeof timerX !== "undefined" && typeof timerO !== "undefined") {
+      $('.timerbox').show();
+      if (advancedMode) {
+        timerX.stopClock();
+        timerO.stopClock();
+        timerX.reset();
+        timerO.reset();
+        timerX.startClock();
+      }
+    } else {
+      window.setTimeout(waitForClocks, 100)
+    }
+  }
+  if (advancedMode) {
+    waitForClocks();
+  }
 }
 var onDisconnect = function(socket) {
   $('#game').hide();
@@ -126,7 +194,6 @@ var resetScore = function() {
   $('.score-o:first').html(0);
 }
 var addNewRoom = function(data, socket) {
-  console.log(data)
   $('#rooms-list').append('<div class="rooms-list-position"></div>');
   $('.rooms-list-position:last').append('<p class="room-name">' + data.roomName + '</p>');
   $('.rooms-list-position:last').append('<p class="room-mode">' + data.mode + '</p>');
@@ -165,12 +232,35 @@ var onActualizeView = function(data, socket) {
     }
   }
 }
-var timer = function(socket) {
-
+var onActualizeClock = function(data, socket) {
+  let timeLeft = data.timeLeft;
+  let symbol = data.symbol.toLowerCase();
+  let timer = timerX;
+  if (symbol == 'o') {
+    timer = timerO;
+  }
+  timer.setTimeLeft(timeLeft);
+  timer.setHtml();
+}
+var onSwitchClock = function(data, socket) {
+  nextSymbol = data.nextSymbol.toLowerCase();
+  console.log(data);
+  if (nextSymbol == 'x') {
+    timerO.stopClock();
+    timerX.setTimeLeft(data.nextTimeLeft)
+    timerX.setHtml();
+    timerX.startClock();
+  } else {
+    timerX.stopClock();
+    timerO.setTimeLeft(data.nextTimeLeft);
+    timerO.setHtml();
+    timerO.startClock();
+  }
 }
 $(document).ready(function() {
   namespace = '/';
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
   recoverInitialBoard();
   addClickHandler(socket);
   $('#out-of-room').show();
@@ -189,6 +279,12 @@ $(document).ready(function() {
   });
   socket.on('actualizeView', function(data) {
     onActualizeView(data, socket);
+  });
+  socket.on('actualizeClock', function(data) {
+    onActualizeClock(data, socket);
+  });
+  socket.on('switchClock', function(data) {
+    onSwitchClock(data, socket);
   });
   socket.on('createRoom', function(data) {
     addNewRoom(data, socket)

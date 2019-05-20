@@ -29,7 +29,7 @@ def getRoomById(roomId):
 def handleCreateRoom(data, socketId):
     roomId = str(socketId)[-2:] + generateRoomId(4) + str(socketId)[:2]
     newRoom = room.Room(
-        socketId, roomId, data['roomName'], data['advancedMode'], float(data['playTime']))
+        socketId, roomId, data['roomName'], data['advancedMode'], int(data['playTime']))
     rooms.append({'socketId': socketId, 'room': newRoom})
     mode = 'casual'
     playTime = '-'
@@ -42,8 +42,9 @@ def handleCreateRoom(data, socketId):
         'mode': mode,
         'playTime': playTime
     }
-    handleJoinRoom(data, socketId)
+    print(data)
     fsio.emit('createRoom', data, broadcast=True)
+    handleJoinRoom(data, socketId)
 
 
 def handleClickedField(data, socketId):
@@ -104,10 +105,13 @@ def handleReceivedMessage(data, socketId):
 def handleJoinRoom(data, socketId):
     gameActivated = False
     room = getRoomById(data['roomId'])
+    data['advancedMode']= room.advancedMode
+    data['playTime'] = room.playTime
     if room is not None:
         data['status'] = 'JOINED_ROOM'
         fsio.emit('joinRoom', data, room=socketId)
         room.connectClient(socketId)
+        print(room.clients)
         if len(room.whoseSocket) >= 2:
             if not room.isGameActive:
                 gameActivated = True
@@ -148,7 +152,8 @@ def handleConnection(socketId):
         mode = 'casual'
         playTime = '-'
         if room.advancedMode:
-            mode = str(room.playTime) + ' s'
+            mode = 'advanced'
+            playTime = str(room.playTime) + ' s'
         data.append(
             {'roomName': room.name,
              'mode': mode,
