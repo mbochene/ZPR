@@ -1,5 +1,7 @@
 #!venv/bin/python3
 import time
+
+
 class Timer:
     def __init__(self, seconds):
         self.startTime = None

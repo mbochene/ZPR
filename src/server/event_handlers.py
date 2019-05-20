@@ -105,7 +105,7 @@ def handleReceivedMessage(data, socketId):
 def handleJoinRoom(data, socketId):
     gameActivated = False
     room = getRoomById(data['roomId'])
-    data['advancedMode']= room.advancedMode
+    data['advancedMode'] = room.advancedMode
     data['playTime'] = room.playTime
     if room is not None:
         data['status'] = 'JOINED_ROOM'

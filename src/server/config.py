@@ -55,6 +55,7 @@ def handleJoinRoom(data):
     if gameActivated and room.advancedMode:
         socketio.start_background_task(target=clock.clock, room=room)
 
+
 @socketio.on('leaveRoom', namespace=namespace)
 def handleLeaveRoom():
     gameActivated, room = evh.handleLeaveRoom(flask.request.sid)
