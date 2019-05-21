@@ -70,12 +70,7 @@ var addClickHandler = function(socket) {
     inHtml = $(this).html();
     id = $(this).attr('id');
     var data = {
-      id: id,
-      inHtml: inHtml,
-      toLighten: [],
-      localGameEnded: false,
-      localBoardWinner: '',
-      globalGameEnded: false
+      id: id
     };
     socket.emit('clickedField', data);
   });
@@ -84,7 +79,6 @@ var addJoinHandler = function(button, socket) {
   button.click(function(event) {
     var data = {
       roomId: $(this).parent().children('p.room-id').html(),
-      status: ''
     }
     socket.emit('joinRoom', data)
   });
@@ -102,30 +96,28 @@ var appendMessage = function(msg, sender) {
   chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
 }
 var onJoin = function(data) {
-  if (data.status == 'JOINED_ROOM') {
-    window.timerX = undefined;
-    window.timerO = undefined;
-    $('#out-of-room').hide();
-    $('#in-room').show();
-    $('#welcome-info').show();
-    $('#game').hide();
-    $('.timerbox').hide()
-    console.log(data)
-    advancedMode = data.advancedMode
-    if (advancedMode) {
-      $.getScript("../static/js/clock.js").then(function() {
-        window.timerX = new Clock($('.timer-x:first'), data.playTime);
-        window.timerO = new Clock($('.timer-o:first'), data.playTime);
-        console.log(window.timerX);
-      }, function(err) {
-        console.log(err);
-      });
-    }
+  window.timerX = undefined;
+  window.timerO = undefined;
+  $('#welcome-info').show();
+  $('#game').hide();
+  $('.timerbox').hide()
+  $('#out-of-room').hide();
+  $('#in-room').show();
+  console.log(data)
+  advancedMode = data.advancedMode
+  if (advancedMode) {
+    $.getScript("../static/js/clock.js").then(function() {
+      window.timerX = new Clock($('.timer-x:first'), data.playTime);
+      window.timerO = new Clock($('.timer-o:first'), data.playTime);
+      console.log(window.timerX);
+    }, function(err) {
+      console.log(err);
+    });
   }
 }
 var onLeave = function() {
-  $('#in-room').hide();
   $('#out-of-room').show();
+  $('#in-room').hide();
   clearChat();
 }
 var handleCreateClick = function(socket) {
@@ -153,20 +145,20 @@ var handleLeaveClick = function(socket) {
   socket.emit('leaveRoom')
 }
 var onGameStop = function(socket) {
+  $('#welcome-info').show();
   $('.timerbox').hide();
+  $('#game').hide();
   if (advancedMode) {
     timerX.stopClock();
     timerO.stopClock();
   }
-  $('#game').hide();
-  $('#welcome-info').show();
   recoverInitialBoard();
   resetScore();
   addClickHandler(socket);
 }
 var onGameStart = function() {
-  $('#game').show();
   $('#welcome-info').hide();
+  $('#game').show();
 
   function waitForClocks() {
     if (typeof timerX !== "undefined" && typeof timerO !== "undefined") {
@@ -246,19 +238,17 @@ var onActualizeClock = function(data, socket) {
   timer.setHtml();
 }
 var onSwitchClock = function(data, socket) {
-  nextSymbol = data.nextSymbol.toLowerCase();
-  console.log(data);
-  if (nextSymbol == 'x') {
-    timerO.stopClock();
-    timerX.setTimeLeft(data.nextTimeLeft)
-    timerX.setHtml();
-    timerX.startClock();
-  } else {
-    timerX.stopClock();
-    timerO.setTimeLeft(data.nextTimeLeft);
-    timerO.setHtml();
-    timerO.startClock();
+  symbol = data.symbol.toLowerCase();
+  timerStopping = timerX;
+  timerStarting = timerO;
+  if (symbol == 'o') {
+    timerStopping = timerO;
+    timerStarting = timerX;
   }
+  timerStopping.stopClock();
+  timerStopping.setTimeLeft(data.timeLeft)
+  timerStopping.setHtml();
+  timerStarting.startClock()
 }
 $(document).ready(function() {
   namespace = '/';
@@ -324,7 +314,6 @@ $(document).ready(function() {
     $("#textfield").val('');
     var data = {
       msg: message,
-      who: ''
     }
     socket.emit('msgSent', data);
   });

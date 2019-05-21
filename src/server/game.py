@@ -1,12 +1,10 @@
 #!venv/bin/python3
-import engine as en
 
 ## \file game.py
 #   Plik zawierający definicję klasy "Game".
+import engine as en
 
-## Klasa reprezentująca pojedyńczą grę (mogącą składać się z wielu rund).
-
-
+## Klasa reprezentująca pojedynczą grę (mogącą składać się z wielu rund).
 class Game:
     ## Konstruktor. Tworzy nową grę, ustawia słowniki reprezentujące symbole graczy oraz tablicę wyników.
     # @param self

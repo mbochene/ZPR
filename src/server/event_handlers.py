@@ -36,17 +36,23 @@ def handleCreateRoom(data, socketId):
     if data['advancedMode']:
         mode = 'advanced'
         playTime = str(data['playTime']) + ' s'
-    data = {
+    createData = {
         'roomId': roomId,
         'roomName': data['roomName'],
         'mode': mode,
         'playTime': playTime
     }
-    fsio.emit('createRoom', data, broadcast=True)
-    handleJoinRoom(data, socketId)
+    joinData = {
+        'roomId': roomId
+    }
+    handleJoinRoom(joinData, socketId)
+    fsio.emit('createRoom', createData, broadcast=True)
 
 
 def handleClickedField(data, socketId):
+    viewData = {
+        'id': data['id']
+    }
     room = getRoomClientIsConnectedTo(socketId)
     if room is None:
         return
@@ -69,46 +75,49 @@ def handleClickedField(data, socketId):
         else:
             toLighten.append(nextBoard)
 
-        data['inHtml'] = game.whoseTurnSymbol
-        data['toLighten'] = toLighten
+        viewData['inHtml'] = game.whoseTurnSymbol
+        viewData['toLighten'] = toLighten
 
         if game.checkLocalWin() == en.PlayerSymbol.none:
-            data['localGameEnded'] = False
-            data['localBoardWinner'] = ''
+            viewData['localGameEnded'] = False
+            viewData['localBoardWinner'] = ''
         else:
-            data['localGameEnded'] = True
-            data['localBoardWinner'] = game.whoseTurnSymbol
+            viewData['localGameEnded'] = True
+            viewData['localBoardWinner'] = game.whoseTurnSymbol
 
         globalWinner = game.checkGlobalWin()
 
         if globalWinner != en.PlayerSymbol.none:
-            data['globalGameEnded'] = True
-            data['globalGameWinner'] = data['localBoardWinner']
+            viewData['globalGameEnded'] = True
+            viewData['globalGameWinner'] = viewData['localBoardWinner']
             game.scoreTable[game.whoseTurnSymbol] += 1
             game.prepareNewRound()
         else:
-            data['globalGameEnded'] = False
+            viewData['globalGameEnded'] = False
         for sid in room.clients:
-            fsio.emit('actualizeView', data, room=sid)
+            fsio.emit('actualizeView', viewData, room=sid)
 
 
 def handleReceivedMessage(data, socketId):
+    receivedMessageData = {
+        'msg': data['msg']
+    }
     room = getRoomClientIsConnectedTo(socketId)
-    data['who'] = 'self'
-    fsio.emit('receivedMessage', data, room=socketId)
-    data['who'] = 'friend'
+    receivedMessageData['who'] = 'self'
+    fsio.emit('receivedMessage', receivedMessageData, room=socketId)
+    receivedMessageData['who'] = 'friend'
     for sid in room.clients:
-        fsio.emit('receivedMessage', data, room=sid, include_self=False)
+        fsio.emit('receivedMessage', receivedMessageData, room=sid, include_self=False)
 
 
 def handleJoinRoom(data, socketId):
-    gameActivated = False
     room = getRoomById(data['roomId'])
-    data['advancedMode'] = room.advancedMode
-    data['playTime'] = room.playTime
+    joinData = {}
+    gameActivated = False
     if room is not None:
-        data['status'] = 'JOINED_ROOM'
-        fsio.emit('joinRoom', data, room=socketId)
+        joinData['advancedMode'] = room.advancedMode
+        joinData['playTime'] = room.playTime
+        fsio.emit('joinRoom', joinData, room=socketId)
         room.connectClient(socketId)
         if len(room.whoseSocket) >= 2:
             if not room.isGameActive:
@@ -117,10 +126,7 @@ def handleJoinRoom(data, socketId):
                     fsio.emit('startGame', room=sid)
                 room.isGameActive = True
             else:
-                fsio.emit('startGame', data, room=socketId)
-    else:
-        data['status'] = 'INVALID_ROOM_ID'
-        fsio.emit('joinRoom', data, room=socketId)
+                fsio.emit('startGame', room=socketId)
     return gameActivated, room
 
 

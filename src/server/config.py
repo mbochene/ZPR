@@ -1,4 +1,8 @@
 #!venv/bin/python3
+## \file config.py
+#  Plik zawierający konfigurację serwera (utworzenie obiektu klasy flask.Flask,
+#  ustalenie ścieżek do istotnych katalogów, a także definicje funkcji
+#  obsługujących poszczególne żądania przesyłane przez klienta)
 import flask
 import flask_socketio as fsio
 import os
@@ -19,21 +23,28 @@ app.config['SECRET_KEY'] = 'tajemnica'
 socketio = fsio.SocketIO(app)
 namespace = None
 
-
+## domyślne przekierowanie na stronę z widokiem gry
 @app.route('/')
 def sessions():
     return flask.render_template('index.html', async_mode='eventlet')
 
+
+## wyłączenie serwera przechodząc pod adres SERVER_IP_ADDR:5000/shutdownServer
 @app.route('/shutdownServer')
 def shutdown():
     socketio.stop()
 
+
+
 @socketio.on('clickedField', namespace=namespace)
+## funkcja obsługująca żądanie 'clickedField' przesłane przez klienta.
+#  @param data - dane zapisane w słowniku (id klikniętego pola)
 def handleClick(data):
     evh.handleClickedField(data, flask.request.sid)
 
-
 @socketio.on('msgSent', namespace=namespace)
+## funkcja obsługująca żądanie 'msgSent' przesłane przez klienta.
+#  @param data - dane zapisane w słowniku()
 def handleMessage(data):
     evh.handleReceivedMessage(data, flask.request.sid)
 
