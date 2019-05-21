@@ -55,6 +55,8 @@ def clock(room):
         room.clients[0]: tm.Timer(room.playTime),
         room.clients[1]: tm.Timer(room.playTime)
     }
+    #engineSymbols = [{client: engineSymbol} for client in room.whoseSocket.keys() for engineSymbol
+    #                 in playerSymbol if symbolList[room.whoseSocket.get(client) - 1] == playerSymbol.get(engineSymbol)]
     scores = list(game.scoreTable.values())
     nextMovingSocketId = next((sid for sid, symbol in room.whoseSocket.items(
     ) if symbol == game.getWhoseTurn()), None)
@@ -106,6 +108,7 @@ def clock(room):
                 'localBoardWinner': winningSymbol,
                 'globalGameWinner': winningSymbol,
             }
+            game.scoreTable[winningSymbol] += 1
             game.prepareNewRound()
             with config.app.test_request_context():
                 for sid in room.clients:
