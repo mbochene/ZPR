@@ -65,3 +65,8 @@ int GameState::getNextBoard()
 {
     return nextBoard;
 }
+
+bool GameState::gameEnded()
+{
+    return globalBoard->gameEnded();
+}

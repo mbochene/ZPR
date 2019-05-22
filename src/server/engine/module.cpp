@@ -16,7 +16,8 @@ BOOST_PYTHON_MODULE(engine)
         .def("checkGlobalWin", &GameState::checkGlobalWin)
         .def("getWhoseTurn", &GameState::getWhoseTurn)
         .def("isBoardNotPlayable", &GameState::isBoardNotPlayable)
-        .def("getNextBoard", &GameState::getNextBoard);
+        .def("getNextBoard", &GameState::getNextBoard)
+        .def("gameEnded", &GameState::gameEnded);
 
     enum_<Board::PlayerSymbol>("PlayerSymbol")
         .value("none", Board::PlayerSymbol::NONE)

@@ -67,6 +67,12 @@ class GameState
     *   Jeśli wartość nextBoard to 9, to następny ruch może się odbyć na każdej planszy, na której rozgrywka jeszcze się nie zakończyła.
     */
     int getNextBoard();
+
+    /** \brief  Metoda zwracająca informację czy dana runda się zakończyła (remis lub wygrana).
+    *
+    *   Zwraca true, jeśli gra zakończona.\n
+    */
+    bool gameEnded();
 };
 
 #endif
