@@ -203,7 +203,7 @@ var onInitializeRoomsList = function(data, socket) {
 }
 var onActualizeView = function(data, socket) {
   boardId = parseInt(data.id / 10);
-  $('#' + data.id).append('<img src="/static/img/' + data.inHtml + '.png">');
+  $('#' + data.id).append('<img src="/static/img/' + data.symbol + '.png">');
   for (let i = 0; i < 9; ++i) {
     $('.' + i).removeClass('clue');
   }
@@ -219,8 +219,15 @@ var onActualizeView = function(data, socket) {
     }
     $('#' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
     if (data.globalGameEnded) {
-      var score = parseInt($('.score-' + data.globalGameWinner.toLowerCase() + ':first').html()) + 1;
-      $('.score-' + data.globalGameWinner.toLowerCase() + ':first').html(score);
+      if (data.globalBoardWinner == '') {
+        var score = parseInt($('.score-x:first').html()) + 1;
+        $('.score-x:first').html(score);
+        var score = parseInt($('.score-o:first').html()) + 1;
+        $('.score-o:first').html(score);
+      } else {
+        var score = parseInt($('.score-' + data.globalBoardWinner.toLowerCase() + ':first').html()) + 1;
+        $('.score-' + data.globalBoardWinner.toLowerCase() + ':first').html(score);
+      }
       recoverInitialBoard();
       addClickHandler(socket);
       onGameStart()

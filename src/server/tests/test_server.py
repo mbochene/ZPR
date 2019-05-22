@@ -28,16 +28,12 @@ def testJoinRoom():
     roomId = resp[len(resp) - 1]['args'][0][u'roomId']
     testClient2.emit('joinRoom', {
         'roomId': roomId,
-        'advancedMode': '',
-        'playTime': '',
-        'status': ''
     })
     resp = testClient2.get_received(namespace)
     room = evh.getRoomById(roomId)
     assert resp[len(resp) - 2]['args'][0][u'roomId'] == roomId
     assert resp[len(resp) - 2]['args'][0][u'advancedMode'] == advancedMode
     assert resp[len(resp) - 2]['args'][0][u'playTime'] == playTime
-    assert resp[len(resp) - 2]['args'][0][u'status'] == 'JOINED_ROOM'
     assert room.numberOfConnectedClients == 2
     testClient.disconnect()
     testClient2.disconnect()

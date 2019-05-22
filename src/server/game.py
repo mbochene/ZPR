@@ -51,6 +51,11 @@ class Game:
     def checkGlobalWin(self):
         return self.gameState.checkGlobalWin()
 
+    ## Sprawdza, gra się skończyła
+    # @param self
+    def checkGameEnded(self):
+        return self.gameState.gameEnded()
+
     ## Woła metodę silnika "getWhoseTurn".
     # @param self
     def getWhoseTurn(self):
