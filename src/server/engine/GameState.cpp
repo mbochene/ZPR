@@ -43,6 +43,11 @@ Board::PlayerSymbol GameState::checkLocalWin()
         globalBoard->pickField(lastChosenBoard,static_cast<Board::PlayerSymbol>(static_cast<int>(whoseTurn)%2+1));
         return i;
     }
+    else if(localBoards[lastChosenBoard]->gameEnded())          // remis
+    {
+        globalBoard->pickField(lastChosenBoard,Board::PlayerSymbol::NONE);
+    }
+
     return Board::PlayerSymbol::NONE;
 }
 

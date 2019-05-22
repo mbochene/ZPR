@@ -43,7 +43,7 @@ class GameState
     */
     Board::PlayerSymbol checkLocalWin();
 
-     /** \brief  Metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globalnej. 
+     /** \brief  Metoda sprawdzająca czy ostatni ruch doprowadził do wygranej na planszy globalnej. W przypadku remisu na danej planszy lokalnej "zajmowane" jest też pole na planszy globalnej.
     *
     *   Zwraca symbol gracza, jeśli tak.\n
     *   W przeciwnym wypadku zwraca symbol NONE.
