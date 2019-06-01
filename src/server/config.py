@@ -8,11 +8,9 @@ import flask_socketio as fsio
 import os
 import sys
 import event_handlers as evh
-import eventlet as evt
 import time
 import clock
 
-evt.monkey_patch()
 ## Bezwzględna ścieżka do katalogu zawierającego pliki dla klienta
 APP_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app')
 ## Bezwzględna ścieżka do katalogu zawierającego opis strony w języku HTML
@@ -38,8 +36,6 @@ def sessions():
 @app.route('/shutdownServer')
 def shutdown():
     socketio.stop()
-
-
 
 @socketio.on('clickedField', namespace=namespace)
 ## funkcja obsługująca żądanie 'clickedField' przesłane przez klienta.

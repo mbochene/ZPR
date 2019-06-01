@@ -1,41 +1,23 @@
-class Clock {
-  constructor(timerTag, timeLeft) {
-    this.timerTag = timerTag;
-    this.timeLeft = timeLeft;
-    this.playTime = timeLeft;
-    this.setHtml();
-  }
-  reset = function() {
-    this.timeLeft = this.playTime;
-    this.setHtml();
-  }
-  setTimeLeft = function(timeLeft) {
-    this.timeLeft = timeLeft;
-  }
-  getTimeLeft = function() {
-    return this.timeLeft;
-  }
-  setHtml = function() {
-    let minutes = parseInt(this.timeLeft / 60);
-    let seconds = parseInt(this.timeLeft - minutes * 60);
-    let time = (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
-    this.timerTag.html(time);
-  }
-  countdown = function() {
-    this.timeLeft -= 0.3;
-    this.setHtml()
-    if (this.timeLeft <= 0) return;
-    this.startClock();
-  }
-  startClock = function() {
-    this.timer = setTimeout(this.countdown.bind(this), 300)
-  }
-  stopClock = function() {
-    clearTimeout(this.timer);
-  }
-}
+/*
+  zmienne, do których zostaną przypisane stopery, kiedy użytkownik dołączy do
+  z rozgrywką w trybie advanced
+*/
 var timerX, timerO;
+/*
+  zmienna wskazująca na tryb rozgrywki w pokoju, w którym przeybwa użytkownik.
+  false - użytkownik przebywa w pokoju, w którym prowadzona jest rozgrywka w trybie
+          casual lub nie przebywa w żadnym pokoju
+  true - użytkownik przebywa w pokoju, w którym prowadzona jest rozgrywka w trybie
+          advanced
+*/
 var advancedMode = false;
+
+/*
+  generuje planszę lokalną (w stanie początkowym - z podświetleniem i pustymi polami)
+  o podanym id wewnątrz planszy globalnej
+  args:
+  id - id lokalnej planszy (int)
+*/
 var generateLocalBoard = function(id) {
   if (id % 3 == 0) {
     $('#globalboard').append('<tr id="row' + parseInt(id / 3) + '"></tr>');
@@ -50,6 +32,11 @@ var generateLocalBoard = function(id) {
     }
   }
 }
+
+/*
+  Przywraca stan początkowy planszy globalnej (restartuje wszystkie plansze lokalne
+  do stanu początkowego)
+*/
 var recoverInitialBoard = function() {
   var globalBoard = document.getElementById('globalboard');
   while (globalBoard.firstChild) {
@@ -59,12 +46,22 @@ var recoverInitialBoard = function() {
     generateLocalBoard(i);
   }
 }
+
+/*
+  Przywraca chat do stanu początkowego
+*/
 var clearChat = function() {
   var chat = document.querySelector('.chatlogs');
   while (chat.firstChild) {
     chat.removeChild(chat.firstChild);
   }
 }
+
+/*
+  dodaje do elementów klasy pole obsługę kliknięcia (wysyłanie zdarzeń do serwera)
+  args:
+  socket - socket klienta
+*/
 var addClickHandler = function(socket) {
   $(".field").click(function() {
     inHtml = $(this).html();
@@ -75,6 +72,13 @@ var addClickHandler = function(socket) {
     socket.emit('clickedField', data);
   });
 }
+
+/*
+  dodaje do elementu przekazanego jako argument obsługę kliknięcia(dołączenie do pokoju)
+  args:
+  button - przycisk dołączneia do pokoju
+  socket - socket klienta
+*/
 var addJoinHandler = function(button, socket) {
   button.click(function(event) {
     var data = {
@@ -83,6 +87,12 @@ var addJoinHandler = function(button, socket) {
     socket.emit('joinRoom', data)
   });
 }
+
+/*
+  dodaje wiadomość do czatu
+  msg - treść wiadomości (string)
+  socket - socket klienta
+*/
 var appendMessage = function(msg, sender) {
   var imgPath = '/static/img/user-512.png';
   if (sender == 'self') {
@@ -95,31 +105,13 @@ var appendMessage = function(msg, sender) {
   var chatlogs = document.getElementsByClassName('chatlogs')[0];
   chatlogs.scrollTop = chatlogs.scrollHeight - chatlogs.clientHeight;
 }
-var onJoin = function(data) {
-  window.timerX = undefined;
-  window.timerO = undefined;
-  $('#welcome-info').show();
-  $('#game').hide();
-  $('.timerbox').hide()
-  $('#out-of-room').hide();
-  $('#in-room').show();
-  console.log(data)
-  advancedMode = data.advancedMode
-  if (advancedMode) {
-    $.getScript("../static/js/clock.js").then(function() {
-      window.timerX = new Clock($('.timer-x:first'), data.playTime);
-      window.timerO = new Clock($('.timer-o:first'), data.playTime);
-      console.log(window.timerX);
-    }, function(err) {
-      console.log(err);
-    });
-  }
-}
-var onLeave = function() {
-  $('#out-of-room').show();
-  $('#in-room').hide();
-  clearChat();
-}
+
+/*
+  funkcja obsługująca kliknięcie przycisku do tworzenia pokoju.
+  Wysyła do serwera niezbędne dane do utworzenia nowego pokoju.
+  args:
+  socket - socket klienta
+*/
 var handleCreateClick = function(socket) {
   mode = document.getElementById('mode-choice').checked
   document.getElementById('mode-choice').checked = false
@@ -141,9 +133,76 @@ var handleCreateClick = function(socket) {
 
   socket.emit('createRoom', data);
 }
+
+/*
+obsluguje kliknięcie przycisku opuszczenia pokoju.
+Wysyła zdarzenie 'leaveRoom' do serwera.
+*/
 var handleLeaveClick = function(socket) {
   socket.emit('leaveRoom')
 }
+
+/*
+  Resetuje tablice wyników do stanu początkowego (0-0)
+*/
+var resetScore = function() {
+  $('.score-x:first').html(0);
+  $('.score-o:first').html(0);
+}
+
+/*
+  dodaje nowy pokój do listy dostępnych i handler kliknięcia dla przycisku dołączenia do tego pokoju
+*/
+var addNewRoom = function(data, socket) {
+  $('#rooms-list').append('<div class="rooms-list-position"></div>');
+  $('.rooms-list-position:last').append('<p class="room-name">' + data.roomName + '</p>');
+  $('.rooms-list-position:last').append('<p class="room-mode">' + data.mode + '</p>');
+  $('.rooms-list-position:last').append('<p class="room-playtime">' + data.playTime + '</p>');
+  $('.rooms-list-position:last').append('<p class="room-id">' + data.roomId + '</p>');
+  $('.rooms-list-position:last').append('<button class="join-room-button">Join room</button>');
+  addJoinHandler($('.join-room-button:last'), socket);
+}
+
+/*
+  funkcja obsługująca zdarzenie 'joinRoom' wysłane z serwera.
+  Zmienia widok z lobby na okno gry i ewentualnie przygotowuje stopery
+*/
+var onJoin = function(data) {
+  window.timerX = undefined;
+  window.timerO = undefined;
+  $('#welcome-info').show();
+  $('#game').hide();
+  $('.timerbox').hide()
+  $('#out-of-room').hide();
+  $('#in-room').show();
+  console.log(data)
+  advancedMode = data.advancedMode
+  if (advancedMode) {
+    $.getScript("../static/js/clock.js").then(function() {
+      window.timerX = new Clock($('.timer-x:first'), data.playTime);
+      window.timerO = new Clock($('.timer-o:first'), data.playTime);
+      console.log(window.timerX);
+    }, function(err) {
+      console.log(err);
+    });
+  }
+}
+
+/*
+  funkcja obsługująca zdarzenie 'joinRoom' wysłane z serwera.
+  Zmienia widok z okna gry na lobby
+*/
+var onLeave = function() {
+  $('#out-of-room').show();
+  $('#in-room').hide();
+  clearChat();
+}
+
+/*
+  Funkcja obsługująca zdarzenie 'gameStop' wysłane z serwera.
+  Zmienia widok z okna gry aktywnej na okno oczekiwania na graczy i ewentualnie
+  zatrzymuje zegary.
+*/
 var onGameStop = function(socket) {
   $('#welcome-info').show();
   $('.timerbox').hide();
@@ -156,6 +215,12 @@ var onGameStop = function(socket) {
   resetScore();
   addClickHandler(socket);
 }
+
+/*
+  Funkcja obsługująca zdarzenie 'gameStart' wysłane z serwera.
+  Zmienia widok z okna oczekiwania na graczy na widok okna gry aktywnej i ewentualnie
+  resetuje i uruchamia stopery.
+*/
 var onGameStart = function() {
   $('#welcome-info').hide();
   $('#game').show();
@@ -178,29 +243,44 @@ var onGameStart = function() {
     waitForClocks();
   }
 }
+
+/*
+  Funkcja obsługująca zdarzenie 'gameStart' wysłane z serwera.
+  Zmienia widok z okna oczekiwania na graczy na widok okna gry aktywnej i ewentualnie
+  resetuje i uruchamia stopery.
+*/
 var onDisconnect = function(socket) {
-  $('#game').hide();
-  $('#welcome-info').show();
+  $('#in-room').hide();
+  $('#out-of-room').show();
   socket.disconnect();
 }
-var resetScore = function() {
-  $('.score-x:first').html(0);
-  $('.score-o:first').html(0);
-}
-var addNewRoom = function(data, socket) {
-  $('#rooms-list').append('<div class="rooms-list-position"></div>');
-  $('.rooms-list-position:last').append('<p class="room-name">' + data.roomName + '</p>');
-  $('.rooms-list-position:last').append('<p class="room-mode">' + data.mode + '</p>');
-  $('.rooms-list-position:last').append('<p class="room-playtime">' + data.playTime + '</p>');
-  $('.rooms-list-position:last').append('<p class="room-id">' + data.roomId + '</p>');
-  $('.rooms-list-position:last').append('<button class="join-room-button">Join room</button>');
-  addJoinHandler($('.join-room-button:last'), socket);
-}
+
+/*
+  Funkcja obsługująca zdarzenie 'initializeRoomsList' wysłane z serwera.
+  Dla każdego słownika danych o pokoju dodaje nowy pokój do listy dostępnych.
+  args:
+  data - lista słowników z kluczami ('roomName', 'mode', 'playTime', 'roomId')
+  socket - socket klienta
+*/
 var onInitializeRoomsList = function(data, socket) {
   for (var i in data) {
     addNewRoom(data[i], socket);
   }
 }
+
+/*
+  Funkcja obsługująca zdarzenie 'actualizeView' wysłane z serwera.
+  Aktualizuje stan na planszy lokalnej, globalnej i w razie zakończenia rundy
+  przywraca stan początkowy plansz.
+  args:
+  data - słownik z kluczami ('symbol': symbol gracza, który wykonywał ruch,
+         'toLighten': lista id plansz, które należy podświetlić, 'localGameEnded':
+         informacja o tym czy zakończyła się rozgrywka na planszy lokalnej,
+         'localBoardWinner': symbol wygranego na planszy lokalnej, 'globalGameEnded':
+         informacja o tym czy zakończyła się rozgrywka na planszy globalnej,
+          'globalBoardWinner': symbol wygranego na planszy globalnej)
+  socket - socket klienta
+*/
 var onActualizeView = function(data, socket) {
   boardId = parseInt(data.id / 10);
   $('#' + data.id).append('<img src="/static/img/' + data.symbol + '.png">');
@@ -235,6 +315,14 @@ var onActualizeView = function(data, socket) {
     }
   }
 }
+
+/*
+  Funkcja obsługująca zdarzenie 'actualizeClock' wysłane z serwera.
+  Aktualizuje stan stopera (synchronizuje go ze stanem stopera w serwerze)
+  data - słownik z kluczami ('timeLeft': czas pozostały dla gracza grającego z symbolem
+         o wartości spod klucza symbol, 'symbol')
+  socket - socket klienta
+*/
 var onActualizeClock = function(data, socket) {
   let timeLeft = data.timeLeft;
   let symbol = data.symbol.toLowerCase();
@@ -245,6 +333,16 @@ var onActualizeClock = function(data, socket) {
   timer.setTimeLeft(timeLeft);
   timer.setHtml();
 }
+
+/*
+  Funkcja obsługująca zdarzenie 'switchClock' wysłane z serwera.
+  Zmienia zegar, na którym aktualizowany jest co sekundę czas po stronie klienta
+  i synchronizuje czas stopera zatrzymywanego ze stanem tego stopera w serwerze.
+  args:
+  data - słownik z kluczami ('symbol': symbol gracza, którego stoper jest zatrzymywany,
+         'timeLeft': czas pozostały dla gracza, dla którego stoper jest zatrzymywany)
+  socket - socket klienta
+*/
 var onSwitchClock = function(data, socket) {
   symbol = data.symbol.toLowerCase();
   timerStopping = timerX;
@@ -258,6 +356,7 @@ var onSwitchClock = function(data, socket) {
   timerStopping.setHtml();
   timerStarting.startClock()
 }
+
 $(document).ready(function() {
   namespace = '/';
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
