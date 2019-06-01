@@ -72,7 +72,6 @@ class Room:
             self.game.prepareNewGame()
             self.whoseSocket.pop(socketId)
             for socket in self.whoseSocket:             # jak 1 gracz sie odlaczy, to 2 gracz ma stac sie 1 graczem
-                # dodac emita restartujacego gre
                 self.whoseSocket[socket] = 1
             if self.numberOfConnectedClients >= 2:
                 self.whoseSocket[self.clients[1]] = 2

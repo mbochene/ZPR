@@ -87,8 +87,9 @@ def clock(room):
                 'localGameEnded': True,
                 'globalGameEnded': True,
                 'localBoardWinner': winningSymbol,
-                'globalGameWinner': winningSymbol,
+                'globalBoardWinner': winningSymbol,
             }
+            print(game.scoreTable)
             with config.app.test_request_context():
                 for sid in room.clients:
                     fsio.emit('actualizeView', viewData,

@@ -219,6 +219,7 @@ var onActualizeView = function(data, socket) {
     }
     $('#' + boardId).append('<img src="/static/img/' + data.localBoardWinner + '.png">');
     if (data.globalGameEnded) {
+      console.log();
       if (data.globalBoardWinner == '') {
         var score = parseInt($('.score-x:first').html()) + 1;
         $('.score-x:first').html(score);
